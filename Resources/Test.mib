@@ -1,0 +1,215 @@
+﻿TEST-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY,
+    OBJECT-TYPE,
+    enterprises
+        FROM SNMPv2-SMI
+    TruthValue,
+    MacAddress,
+    RowStatus,
+    DateAndTime,
+    StorageType,
+    TAddress
+        FROM SNMPv2-TC
+    SAPType,
+    CountryCode,
+    CountryCodeITU,
+    CiscoRowOperStatus,
+    CiscoPort
+        FROM CISCO-TC;
+
+test MODULE-IDENTITY
+    LAST-UPDATED "200001110000Z"
+    ORGANIZATION "Cisco Systems, Inc."
+    CONTACT-INFO
+        "	Cisco Systems
+            Customer Service
+
+        Postal: 170 West Tasman Drive
+            San Jose, CA 95134
+            USA
+
+          Tel: +1 800 553-NETS
+
+        E-mail: cs-snmp@cisco.com"
+    DESCRIPTION
+        "The Structure of Management Information for the
+        Cisco enterprise."
+    REVISION   "200001110000Z"
+    DESCRIPTION
+        "Added ciscoPolicy, ciscoPolicyAuto, ciscoPIB, and
+        ciscoPibToMib."
+    REVISION   "9704090000Z"
+    DESCRIPTION
+        "Added ciscoPartnerProducts to generate sysObjectID
+        for partner platforms"
+    REVISION   "9505160000Z"
+    DESCRIPTION
+        "New oid assignments for Cisco REPEATER MIB and others."
+    REVISION   "9404262000Z"
+    DESCRIPTION
+        "Initial version of this MIB module."
+    ::= { mytest 8 }	-- assigned by IANA
+
+mytest OBJECT IDENTIFIER ::= { enterprises 9999 }
+
+CiscoCosList ::= TEXTUAL-CONVENTION
+    STATUS          current
+    DESCRIPTION
+        "Each bit represents a CoS value (0 through 7)."
+    SYNTAX          BITS {
+                        cos0(0),
+                        cos1(1),
+                        cos2(2),
+                        cos3(3),
+                        cos4(4),
+                        cos5(5),
+                        cos6(6),
+                        cos7(7)
+                    }
+
+testEntity OBJECT-TYPE
+    SYNTAX      CiscoCosList
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "A textual description of the entity.  This value should
+            include the full name and version identification of
+            the system's hardware type, software operating-system,
+            and networking software."
+    ::= { test 1 }
+
+testEntity2 OBJECT-TYPE
+    SYNTAX      TruthValue
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "A textual description of the entity.  This value should
+            include the full name and version identification of
+            the system's hardware type, software operating-system,
+            and networking software."
+    ::= { test 2 }
+
+testEntity3 OBJECT-TYPE
+    SYNTAX      MacAddress
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "A textual description of the entity.  This value should
+            include the full name and version identification of
+            the system's hardware type, software operating-system,
+            and networking software."
+    ::= { test 3 }
+
+testEntity4 OBJECT-TYPE
+    SYNTAX      RowStatus
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "A textual description of the entity.  This value should
+            include the full name and version identification of
+            the system's hardware type, software operating-system,
+            and networking software."
+    ::= { test 4 }
+
+testEntity5 OBJECT-TYPE
+    SYNTAX      DateAndTime
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "A textual description of the entity.  This value should
+            include the full name and version identification of
+            the system's hardware type, software operating-system,
+            and networking software."
+    ::= { test 5 }
+
+testEntity6 OBJECT-TYPE
+    SYNTAX      StorageType
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "A textual description of the entity.  This value should
+            include the full name and version identification of
+            the system's hardware type, software operating-system,
+            and networking software."
+    ::= { test 6 }
+
+testEntity7 OBJECT-TYPE
+    SYNTAX      TAddress
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "A textual description of the entity.  This value should
+            include the full name and version identification of
+            the system's hardware type, software operating-system,
+            and networking software."
+    ::= { test 7 }
+
+testEntity8 OBJECT-TYPE
+    SYNTAX      SAPType
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "A textual description of the entity.  This value should
+            include the full name and version identification of
+            the system's hardware type, software operating-system,
+            and networking software."
+    ::= { test 8 }
+
+testEntity9 OBJECT-TYPE
+    SYNTAX      CountryCode
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "A textual description of the entity.  This value should
+            include the full name and version identification of
+            the system's hardware type, software operating-system,
+            and networking software."
+    ::= { test 9 }
+
+testEntity10 OBJECT-TYPE
+    SYNTAX      CountryCodeITU
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "A textual description of the entity.  This value should
+            include the full name and version identification of
+            the system's hardware type, software operating-system,
+            and networking software."
+    ::= { test 10 }
+
+testEntity11 OBJECT-TYPE
+    SYNTAX      CiscoRowOperStatus
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "A textual description of the entity.  This value should
+            include the full name and version identification of
+            the system's hardware type, software operating-system,
+            and networking software."
+    ::= { test 11 }
+
+testEntity12 OBJECT-TYPE
+    SYNTAX      CiscoPort
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "A textual description of the entity.  This value should
+            include the full name and version identification of
+            the system's hardware type, software operating-system,
+            and networking software."
+    ::= { test 12 }
+    
+testEntity13 OBJECT-TYPE
+    SYNTAX      INTEGER (30000000..31000000 | 13750000..14500000 | 5850000..6425000 | 7900000..8400000)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "A textual description of the entity.  This value should
+            include the full name and version identification of
+            the system's hardware type, software operating-system,
+            and networking software."
+    ::= { test 13 }
+
+END
