@@ -44,6 +44,8 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var item = registry.Tree.Find("SNMPv2-MIB", "sysDescr");
             var entity = item.DisplayEntity;
             Assert.AreEqual("A textual description of the entity.  This value should include the full name and version identification of the system's hardware type, software operating-system, and networking software.", entity.DescriptionFormatted());
+            Assert.AreEqual(EntityStatus.Current, entity.Status);
+            Assert.AreEqual(string.Empty, entity.Reference);
 
             var longStr = new StringBuilder();
             for (int i = 0; i <= 256; i++)
