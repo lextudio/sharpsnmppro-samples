@@ -47,6 +47,10 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual(EntityStatus.Current, entity.Status);
             Assert.AreEqual(string.Empty, entity.Reference);
 
+            var obj = entity as IObjectTypeMacro;
+            Assert.AreEqual(Access.ReadOnly, obj.MibAccess);
+            Assert.AreEqual(SnmpType.OctetString, obj.BaseSyntax);
+
             var longStr = new StringBuilder();
             for (int i = 0; i <= 256; i++)
             {
