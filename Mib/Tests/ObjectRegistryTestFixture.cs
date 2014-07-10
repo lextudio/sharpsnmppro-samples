@@ -26,6 +26,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         {
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
@@ -91,7 +92,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity5", new OctetString(new byte[] { 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9 })));
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity5", new OctetString(new byte[] { 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9 })));
             Assert.Throws<InvalidOperationException>(() => registry.Decode("TEST-MIB", "testEntity5", new OctetString(new byte[] { 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9 })));
-            Assert.AreEqual("8/17/2004 3:48:00 PM (UTC-05:00) Bogota, Lima, Quito", registry.Decode("TEST-MIB", "testEntity5", new OctetString(new byte[] { 0x07, 0xD4, 0x08, 0x11, 0x0F, 0x30, 0x00, 0x00, 0x2D, 0x05, 0x00 })));
+            Assert.AreEqual("8/17/2004 3:48:00 PM (UTC-05:00) Bogota, Lima, Quito, Rio Branco", registry.Decode("TEST-MIB", "testEntity5", new OctetString(new byte[] { 0x07, 0xD4, 0x08, 0x11, 0x0F, 0x30, 0x00, 0x00, 0x2D, 0x05, 0x00 })));
             Assert.AreEqual("08/17/2004 15:48:00", registry.Decode("TEST-MIB", "testEntity5", new OctetString(new byte[] { 0x07, 0xD4, 0x08, 0x11, 0x0F, 0x30, 0x00, 0x00 })));
             Assert.AreEqual("5/26/1992 1:30:15 PM (UTC-04:00) Asuncion", registry.Decode("TEST-MIB", "testEntity5", new OctetString(new byte[] { 0x07, 0xC8, 5, 26, 13, 30, 15, 0x00, 0x2D, 0x04, 0x00 })));
             Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity5", new OctetString(new byte[] { 0x9 })));
@@ -158,6 +159,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var unknown = new ObjectIdentifier(new uint[] { 1, 3, 6, 8, 18579, 111111 });
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
@@ -175,6 +177,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var oid = new uint[] { 1 };
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;            
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
@@ -190,6 +193,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var oid2 = new uint[] { 1, 3, 6, 1, 2, 1, 10 };
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;            
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
@@ -206,6 +210,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var oid = new uint[] { 1, 3, 6, 1, 2, 1, 1 };
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;            
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
@@ -221,6 +226,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         {
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;            
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
@@ -239,6 +245,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             const string textual = "::iso";
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;            
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
@@ -256,6 +263,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             const string textual = "SNMPv2-SMI::transmission";
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;            
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
@@ -271,6 +279,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         {
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;            
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
@@ -291,6 +300,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             const string textual = "SNMPv2-MIB::system";
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;            
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
@@ -308,6 +318,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             const string textual = "SNMPv2-TM::snmpUDPDomain";
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;            
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
@@ -324,6 +335,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             const string name = "SNMPv2-MIB::sysORTable";
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;            
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
@@ -346,6 +358,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             const string name = "SNMPv2-MIB::sysORTable.0";
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;            
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
@@ -363,6 +376,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             const string expected = "SNMPv2-MIB::sysORTable.0";
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;            
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
@@ -379,6 +393,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             const string name = "SNMPv2-MIB::snmpMIB";
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;            
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
@@ -395,6 +410,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var collector = new ErrorRegistry();
             var modules = Parser.Compile(new MemoryStream(Resources.ACTONA_ACTASTOR_MIB), collector);
             var registry = new SimpleObjectRegistry();
+            registry.Tree.Collector = collector;            
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
@@ -413,6 +429,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         {
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;            
             registry.Import(Parser.Compile(new MemoryStream(Resources.RFC_1212), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.RFC1155_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.RFC1213_MIB1), collector));
@@ -439,6 +456,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         {
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;            
             registry.Import(Parser.Compile(new MemoryStream(Resources.RFC_1212), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.RFC1155_SMI), collector));
             registry.Import(Parser.Compile(new MemoryStream(Resources.RFC1213_MIB1), collector));
