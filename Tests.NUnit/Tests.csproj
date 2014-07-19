@@ -58,10 +58,10 @@
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="SharpSnmpLib">
-      <HintPath>SharpSnmpLib.dll</HintPath>
+      <HintPath>..\SharpSnmpLib.dll</HintPath>
     </Reference>
     <Reference Include="SharpSnmpPro.Mib">
-      <HintPath>SharpSnmpPro.Mib.dll</HintPath>
+      <HintPath>..\SharpSnmpPro.Mib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
@@ -73,9 +73,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Mib\Tests\ObjectRegistryTestFixture.cs" />
-    <None Include=".nuget\NuGet.Config" />
-    <None Include=".nuget\NuGet.exe" />
-    <None Include=".nuget\NuGet.targets" />
     <None Include="packages.config" />
     <None Include="packages\repositories.config" />
     <None Include="Resources\ADMIN-AUTH-STATS-MIB.mib" />

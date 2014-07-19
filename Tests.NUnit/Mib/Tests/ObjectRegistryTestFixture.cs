@@ -469,7 +469,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Import(Parser.Compile(new MemoryStream(Resources.ALLIEDTELESYN_MIB), collector));
             registry.Refresh();
 
-            Assert.AreEqual(0, collector.Errors.Count);
+            Assert.AreEqual(1, collector.Errors.Count);
         }
         // ReSharper restore InconsistentNaming
     }
