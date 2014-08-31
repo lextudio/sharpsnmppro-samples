@@ -3,6 +3,7 @@ using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpPro.Mib;
 using System.IO;
 using snmptranslate.Properties;
+using Parser=Lextm.SharpSnmpPro.Mib.Parser2;
 
 namespace snmptranslate
 {

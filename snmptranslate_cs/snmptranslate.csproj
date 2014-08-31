@@ -65,11 +65,11 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="SharpSnmpLib">
-      <HintPath>..\SharpSnmpLib.dll</HintPath>
+    <Reference Include="SharpSnmpLib.Portable">
+      <HintPath>..\SharpSnmpLib.Portable.dll</HintPath>
     </Reference>
-    <Reference Include="SharpSnmpPro.Mib">
-      <HintPath>..\SharpSnmpPro.Mib.dll</HintPath>
+    <Reference Include="SharpSnmpPro.Mib.Trial">
+      <HintPath>..\SharpSnmpPro.Mib.Trial.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>

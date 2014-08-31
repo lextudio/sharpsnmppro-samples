@@ -14,6 +14,7 @@ using System.Text;
 using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpPro.Properties;
 using NUnit.Framework;
+using Parser = Lextm.SharpSnmpPro.Mib.Parser2;
 
 #pragma warning disable 1591
 namespace Lextm.SharpSnmpPro.Mib.Tests
@@ -47,11 +48,23 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual("A textual description of the entity.  This value should include the full name and version identification of the system's hardware type, software operating-system, and networking software.", entity.DescriptionFormatted());
             Assert.AreEqual(EntityStatus.Current, entity.Status);
             Assert.AreEqual(string.Empty, entity.Reference);
-
+            
             var obj = entity as IObjectTypeMacro;
             Assert.AreEqual(Access.ReadOnly, obj.MibAccess);
             Assert.AreEqual(SnmpType.OctetString, obj.BaseSyntax);
+#if !TRIAL
+            Assert.IsTrue(obj.Syntax is UnknownType);
+            Assert.IsTrue(obj.ResolvedSyntax is TypeAssignment);
+            var type = obj.ResolvedSyntax as TypeAssignment;
+            Assert.IsTrue(type.BaseType is TextualConventionMacro);
+            Assert.AreEqual("DisplayString", type.Name);
+            var macro = type.BaseType as TextualConventionMacro;
+            Assert.IsTrue(macro.BaseType is OctetStringType);
 
+            var name = new StringBuilder();
+            obj.ResolvedSyntax.Append(name);
+            Assert.AreEqual("DisplayString ::= TEXTUAL-CONVENTION\r\nDISPLAY-HINT \"255a\"\r\nSTATUS current\r\nSYNTAX OCTET STRING", name.ToString());
+#endif
             var longStr = new StringBuilder();
             for (int i = 0; i <= 256; i++)
             {
@@ -64,15 +77,19 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.IsTrue(registry.Verify("IF-MIB", "ifAdminStatus", new Integer32(2)));
             Assert.AreEqual("down(2)", registry.Decode("IF-MIB", "ifAdminStatus", new Integer32(2)));
             Assert.IsFalse(registry.Verify("IF-MIB", "ifAdminStatus", new Integer32(5)));
-
+#if !TRIAL
             // Test BITS
-            //Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity", new OctetString(new byte[] { 0x8 })));
-            //Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity", new OctetString(new byte[] { 0x8, 0x9 })));
-
+            Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity", new OctetString(new byte[] { 0x8 })));
+            Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity", new OctetString(new byte[] { 0x8, 0x9 })));
+#endif
             // Test TruthValue
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity2", new Integer32(1)));
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity2", new Integer32(2)));
             Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity2", new Integer32(0)));
+            var entityTruthValue = (ObjectTypeMacro)registry.Tree.Find("TEST-MIB", "testEntity2").DisplayEntity;
+            var truthValueName = new StringBuilder();
+            entityTruthValue.ResolvedSyntax.Append(truthValueName);
+            Assert.AreEqual("TruthValue ::= TEXTUAL-CONVENTION\r\nSTATUS current\r\nSYNTAX INTEGER { true(1), false(2) }", truthValueName.ToString());
 
             // Test MacAddress
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity3", new OctetString(new byte[] { 0x9, 0x9, 0x9, 0x9, 0x9, 0x9 })));
@@ -109,35 +126,35 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity7", new OctetString(new byte[0])));
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity7", new OctetString(new byte[] { 0x9 })));
             Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity7", new OctetString(longStr.ToString())));
-
+#if !TRIAL
             // SAP type
-            //Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity8", new Integer32(0)));
-            //Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity8", new Integer32(254)));
-            //Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity8", new Integer32(255)));
-
+            Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity8", new Integer32(0)));
+            Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity8", new Integer32(254)));
+            Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity8", new Integer32(255)));
+#endif
             // CountryCode
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity9", new OctetString(new byte[0])));
             Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity9", new OctetString(new byte[] { 0x9 })));
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity9", new OctetString(new byte[] { 0x9, 0x9 })));
             Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity9", new OctetString(longStr.ToString())));
-
+#if !TRIAL
             // CountryCodeITU
-            //Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity10", new Gauge32(0)));
-            //Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity10", new Gauge32(255)));
-            //Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity10", new Gauge32(256)));
-
+            Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity10", new Gauge32(0)));
+            Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity10", new Gauge32(255)));
+            Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity10", new Gauge32(256)));
+#endif
             // CiscoRowOperStatus
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity11", new Integer32(1)));
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity11", new Integer32(2)));
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity11", new Integer32(3)));
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity11", new Integer32(4)));
             Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity11", new Integer32(0)));
-
+#if !TRIAL
             // CiscoPort
-            //Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity12", new Integer32(0)));
-            //Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity12", new Integer32(65535)));
-            //Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity12", new Integer32(65536)));
-
+            Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity12", new Integer32(0)));
+            Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity12", new Integer32(65535)));
+            Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity12", new Integer32(65536)));
+#endif
             // Custom
             Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity13", new Integer32(0)));
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity13", new Integer32(30000000)));
@@ -343,6 +360,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TM), collector));
             registry.Refresh();
             uint[] id = registry.Translate(name);
+#if !TRIAL
+            Assert.IsTrue(registry.IsTableId(id));
+#endif 
             var node = registry.Tree.Find("SNMPv2-MIB", "sysORTable");
             var node1 = registry.Tree.Find("SNMPv2-MIB", "sysOREntry");
             var node2 = registry.Tree.Find("SNMPv2-MIB", "sysORIndex");
@@ -401,6 +421,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TM), collector));
             registry.Refresh();
             uint[] id = registry.Translate(name);
+#if !TRIAL
+            Assert.IsFalse(registry.IsTableId(id));
+#endif
         }
 
         [Test]
