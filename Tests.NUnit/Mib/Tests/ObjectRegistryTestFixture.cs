@@ -81,7 +81,21 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             // Test BITS
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity", new OctetString(new byte[] { 0x8 })));
             Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity", new OctetString(new byte[] { 0x8, 0x9 })));
+            var bits = (ObjectTypeMacro)registry.Tree.Find("TEST-MIB", "testEntity").DisplayEntity;
+            {
+                var inner = bits.ResolvedSyntax.GetLastType();
+                var inType = inner as OctetStringType;
+                Assert.IsNotNull(inType);
+                Assert.AreEqual(8, inType.NamedBits.Count);
+                var item1 = inType.NamedBits[0] as NamedBit;
+                Assert.AreEqual("cos0", item1.Name);
+                Assert.AreEqual(0, item1.Number);
+                var item2 = inType.NamedBits[1] as NamedBit;
+                Assert.AreEqual("cos1", item2.Name);
+                Assert.AreEqual(1, item2.Number);
+            }
 #endif
+
             // Test TruthValue
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity2", new Integer32(1)));
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity2", new Integer32(2)));
@@ -90,6 +104,20 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var truthValueName = new StringBuilder();
             entityTruthValue.ResolvedSyntax.Append(truthValueName);
             Assert.AreEqual("TruthValue ::= TEXTUAL-CONVENTION\r\nSTATUS current\r\nSYNTAX INTEGER { true(1), false(2) }", truthValueName.ToString());
+#if !TRIAL
+            {
+                var inner = entityTruthValue.ResolvedSyntax.GetLastType();
+                var inType = inner as IntegerType;
+                Assert.IsNotNull(inType);
+                Assert.AreEqual(2, inType.NamedNumberList.Count);
+                var item1 = inType.NamedNumberList[0] as NamedNumber;
+                Assert.AreEqual("true", item1.Name);
+                Assert.AreEqual(1, (item1.Value as NumberLiteralValue).Value);
+                var item2 = inType.NamedNumberList[1] as NamedNumber;
+                Assert.AreEqual("false", item2.Name);
+                Assert.AreEqual(2, (item2.Value as NumberLiteralValue).Value);
+            }
+#endif
 
             // Test MacAddress
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity3", new OctetString(new byte[] { 0x9, 0x9, 0x9, 0x9, 0x9, 0x9 })));
