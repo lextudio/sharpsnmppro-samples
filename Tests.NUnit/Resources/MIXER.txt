@@ -1,0 +1,69 @@
+-- Network Working Group                                         S. Kille
+-- Request for Comments: 2156                                  Isode Ltd.
+-- Obsoletes: 987, 1026, 1138, 1148, 1327, 1495              January 1998
+-- Updates: 822
+-- Category: Standards Track
+
+
+--               MIXER (Mime Internet X.400 Enhanced Relay):
+--                  Mapping between X.400 and RFC 822/MIME
+
+--PSIM    MIXER Definitions { iso org(3) dod(6) internet(1) mail(7)
+--PSIM          mixer(1) mixer-core(3) definitions(1) }
+--PSIM 
+--PSIM    DEFINITIONS IMPLICIT TAGS ::=
+   MIXER DEFINITIONS ::=
+
+   BEGIN
+
+   -- exports everything
+
+--PSIM(Comment)   IMPORTS
+
+--PSIM(Comment)   EXTENSION FROM
+--PSIM(Comment)     MTSAbstractService {join-iso-ccit mhs-motis(6) mts(3)
+--PSIM(Comment)           modules(0) mts-abstract-service(1) }
+
+--PSIM(Comment)     HEADING-EXTENSION FROM
+--PSIM(Comment)       IPMSAbstractService {join-iso-ccit mhs-motis(6) ipms(1)
+--PSIM(Comment)             modules(0) abstract-service(3) }
+
+
+
+--PSIM(Comment)   rfc-822-field HEADING-EXTENSION
+--PSIM(Comment)           VALUE RFC822FieldList
+--PSIM(Comment)           ::= id-rfc-822-field-list
+
+
+--PSIM(Comment)   RFC822FieldList ::= SEQUENCE OF RFC822Field
+
+--PSIM(Comment)   RFC822Field ::= IA5String
+
+
+
+--PSIM(Comment)   dsn-header-list EXTENSION
+--PSIM(Comment)      RFC822FieldList
+--PSIM(Comment)      ::= id-dsn-header-list
+
+--PSIM(Comment)   dsn-field-list EXTENSION
+--PSIM(Comment)      RFC822FieldList
+--PSIM(Comment)      ::= id-dsn-field-list
+
+--PSIM   internet ::= OBJECT IDENTIFIER  { iso org(3) dod(6) 1 } -¤- from RFC 1155
+   internet OBJECT IDENTIFIER  ::= { iso org(3) dod(6) 1 } -- from RFC 1155
+
+   mail OBJECT IDENTIFIER ::= { internet 7 }  -- IANA assigned
+
+   mixer OBJECT IDENTIFIER ::= { mail mixer(1) } -- inherited from RFC 1495
+--PSIM   mixer-core OBJECT IDENTIFIER ::= { mixer core(3) }
+   mixer-core OBJECT IDENTIFIER ::= { mixer mixer-core(3) }
+
+   id-rfc-822-field-list OBJECT IDENTIFIER ::= {mixer-core 2}
+   id-dsn-header-list OBJECT IDENTIFIER ::= {mixer-core 3}
+   id-dsn-field-list OBJECT IDENTIFIER ::= {mixer-core 4}
+
+   eit-mixer OBJECT IDENTIFIER ::= {mixer-core 5}
+                   -- the MIXER pseudo-EIT
+
+
+   END -- MIXER ASN.1
