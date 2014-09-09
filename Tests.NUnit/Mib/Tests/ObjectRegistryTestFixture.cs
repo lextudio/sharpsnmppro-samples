@@ -9,7 +9,6 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpPro.Properties;
@@ -193,6 +192,32 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity13", new Integer32(6425100)));
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity13", new Integer32(7900000)));
             Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity13", new Integer32(8401000)));
+        }
+
+        [Test]
+        public void TestChoice()
+        {
+            var registry = new SimpleObjectRegistry();
+            var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;
+            registry.Import(Parser.Compile(new MemoryStream(Resources.RFC1155_SMI), collector));
+            registry.Import(Parser.Compile(new MemoryStream(Resources.Test1), collector));
+            registry.Refresh();
+
+            // Test CHOICE
+            var choiceValue = (ObjectTypeMacro)registry.Tree.Find("TEST-MIB", "testEntity14").DisplayEntity;
+#if !TRIAL
+            {
+                var inner = choiceValue.ResolvedSyntax.GetLastType();
+                var inType = inner as ChoiceType;
+                Assert.IsNotNull(inType);
+                Assert.AreEqual(1, inType.ElementTypes.Count);
+                var item1 = inType.ElementTypes[0] as TaggedElementType;
+                Assert.AreEqual("internet", item1.Name);
+                var root = item1.Subtype.GetLastType();
+                Assert.AreEqual("Lextm.SharpSnmpPro.Mib.IpAddressType", root.ToString());
+            }
+#endif
         }
 
         // ReSharper disable InconsistentNaming
