@@ -53,12 +53,8 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual(SnmpType.OctetString, obj.BaseSyntax);
 #if !TRIAL
             Assert.IsTrue(obj.Syntax is UnknownType);
-            Assert.IsTrue(obj.ResolvedSyntax is TypeAssignment);
-            var type = obj.ResolvedSyntax as TypeAssignment;
-            Assert.IsTrue(type.BaseType is TextualConventionMacro);
-            Assert.AreEqual("DisplayString", type.Name);
-            var macro = type.BaseType as TextualConventionMacro;
-            Assert.IsTrue(macro.BaseType is OctetStringType);
+            var type = obj.ResolvedSyntax.GetLastType();
+            Assert.IsTrue(type is OctetStringType);
 
             var name = new StringBuilder();
             obj.ResolvedSyntax.Append(name);
@@ -414,7 +410,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Refresh();
             uint[] id = registry.Translate(name);
 #if !TRIAL
-            Assert.IsTrue(registry.IsTableId(id));
+            Assert.IsTrue(registry.ValidateTable(new ObjectIdentifier(id)));
 #endif 
             var node = registry.Tree.Find("SNMPv2-MIB", "sysORTable");
             var node1 = registry.Tree.Find("SNMPv2-MIB", "sysOREntry");
@@ -475,7 +471,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Refresh();
             uint[] id = registry.Translate(name);
 #if !TRIAL
-            Assert.IsFalse(registry.IsTableId(id));
+            Assert.IsFalse(registry.ValidateTable(new ObjectIdentifier(id)));
 #endif
         }
 
@@ -545,6 +541,10 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Import(Parser.Compile(new MemoryStream(Resources.ALLIEDTELESYN_MIB), collector));
             registry.Refresh();
 
+            var o = registry.Tree.Search(ObjectIdentifier.Convert("3.6.1.2.1.25"));
+            Assert.IsNull(o.Definition);
+            Assert.AreEqual(".3.6.1.2.1.25", o.AlternativeText);
+            Assert.AreEqual(".3.6.1.2.1.25", o.Text);
             Assert.AreEqual(1, collector.Errors.Count);
         }
         // ReSharper restore InconsistentNaming
