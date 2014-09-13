@@ -14,6 +14,7 @@ using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpPro.Properties;
 using NUnit.Framework;
 using Parser = Lextm.SharpSnmpPro.Mib.Parser2;
+using System.Linq;
 
 #pragma warning disable 1591
 namespace Lextm.SharpSnmpPro.Mib.Tests
@@ -546,6 +547,27 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual(".3.6.1.2.1.25", o.AlternativeText);
             Assert.AreEqual(".3.6.1.2.1.25", o.Text);
             Assert.AreEqual(1, collector.Errors.Count);
+        }
+
+        [Test]
+        public void TestHOSTRESOURCES_MIB()
+        {
+            var registry = new SimpleObjectRegistry();
+            var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;
+            registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
+            registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
+            registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
+            registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_MIB), collector));
+            registry.Import(Parser.Compile(new MemoryStream(Resources.IANAifType_MIB), collector));
+            registry.Import(Parser.Compile(new MemoryStream(Resources.IF_MIB), collector));
+            registry.Import(Parser.Compile(new MemoryStream(Resources.HOST_RESOURCES_MIB), collector));
+            registry.Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+
+            var module = registry.Tree.LoadedModules.FirstOrDefault(mod => mod.Name == "HOST-RESOURCES-MIB");
+            Assert.AreEqual(83, module.Objects.Count);
         }
         // ReSharper restore InconsistentNaming
     }
