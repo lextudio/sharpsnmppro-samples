@@ -96,10 +96,13 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity2", new Integer32(1)));
             Assert.IsTrue(registry.Verify("TEST-MIB", "testEntity2", new Integer32(2)));
             Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity2", new Integer32(0)));
+#if !TRIAL
             var entityTruthValue = (ObjectTypeMacro)registry.Tree.Find("TEST-MIB", "testEntity2").DisplayEntity;
             var truthValueName = new StringBuilder();
             entityTruthValue.ResolvedSyntax.Append(truthValueName);
             Assert.AreEqual("TruthValue ::= TEXTUAL-CONVENTION\r\nSTATUS current\r\nSYNTAX INTEGER { true(1), false(2) }", truthValueName.ToString());
+#endif
+
 #if !TRIAL
             {
                 var inner = entityTruthValue.ResolvedSyntax.GetLastType();
@@ -202,9 +205,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Refresh();
 
             // Test CHOICE
-            var choiceValue = (ObjectTypeMacro)registry.Tree.Find("TEST-MIB", "testEntity14").DisplayEntity;
 #if !TRIAL
             {
+                var choiceValue = (ObjectTypeMacro)registry.Tree.Find("TEST-MIB", "testEntity14").DisplayEntity;
                 var inner = choiceValue.ResolvedSyntax.GetLastType();
                 var inType = inner as ChoiceType;
                 Assert.IsNotNull(inType);
