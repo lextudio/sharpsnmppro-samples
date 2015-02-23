@@ -25,7 +25,6 @@
     </SccAuxPath>
     <SccProvider>
     </SccProvider>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -57,8 +56,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="SharpSnmpLib.Full">
+      <HintPath>..\..\packages\Lextm.SharpSnmpLib.8.5.0.0\lib\net40\SharpSnmpLib.Full.dll</HintPath>
+    </Reference>
     <Reference Include="SharpSnmpLib.Portable">
-      <HintPath>..\SharpSnmpLib.Portable.dll</HintPath>
+      <HintPath>..\..\packages\Lextm.SharpSnmpLib.8.5.0.0\lib\net40\SharpSnmpLib.Portable.dll</HintPath>
     </Reference>
     <Reference Include="SharpSnmpPro.Mib.Trial">
       <HintPath>..\SharpSnmpPro.Mib.Trial.dll</HintPath>
@@ -231,7 +233,6 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
