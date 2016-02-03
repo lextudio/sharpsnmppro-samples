@@ -55,11 +55,13 @@
       <HintPath>..\..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SharpSnmpLib.Full">
-      <HintPath>..\..\packages\Lextm.SharpSnmpLib.8.5.0.0\lib\net40\SharpSnmpLib.Full.dll</HintPath>
+    <Reference Include="SharpSnmpLib.Full, Version=9.0.10202.45, Culture=neutral, PublicKeyToken=4c00852d3788e005, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lextm.SharpSnmpLib.9.0.0-rc1\lib\net45\SharpSnmpLib.Full.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="SharpSnmpLib.Portable">
-      <HintPath>..\..\packages\Lextm.SharpSnmpLib.8.5.0.0\lib\net40\SharpSnmpLib.Portable.dll</HintPath>
+    <Reference Include="SharpSnmpLib.Portable, Version=9.0.10202.45, Culture=neutral, PublicKeyToken=4c00852d3788e005, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lextm.SharpSnmpLib.9.0.0-rc1\lib\net45\SharpSnmpLib.Portable.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SharpSnmpPro.Mib.Trial">
       <HintPath>..\SharpSnmpPro.Mib.Trial.dll</HintPath>
@@ -90,6 +92,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Mib\Tests\ObjectRegistryTestFixture.cs" />
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="packages\repositories.config" />
     <None Include="Resources\ADMIN-AUTH-STATS-MIB.mib" />
