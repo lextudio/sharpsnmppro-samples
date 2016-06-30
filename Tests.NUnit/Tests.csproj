@@ -57,10 +57,10 @@
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="SharpSnmpLib.Full">
-      <HintPath>..\..\packages\Lextm.SharpSnmpLib.8.5.0.0\lib\net40\SharpSnmpLib.Full.dll</HintPath>
+      <HintPath>..\SharpSnmpLib.Full.dll</HintPath>
     </Reference>
     <Reference Include="SharpSnmpLib.Portable">
-      <HintPath>..\..\packages\Lextm.SharpSnmpLib.8.5.0.0\lib\net40\SharpSnmpLib.Portable.dll</HintPath>
+      <HintPath>..\SharpSnmpLib.Portable.dll</HintPath>
     </Reference>
     <Reference Include="SharpSnmpPro.Mib.Trial">
       <HintPath>..\SharpSnmpPro.Mib.Trial.dll</HintPath>
