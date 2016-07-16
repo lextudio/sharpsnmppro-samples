@@ -2,13 +2,18 @@
 using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpPro.Mib;
 using System.IO;
-using snmptranslate.Properties;
-using Parser=Lextm.SharpSnmpPro.Mib.Parser2;
+using Parser = Lextm.SharpSnmpPro.Mib.Parser2;
+using System.Reflection;
 
 namespace snmptranslate
 {
     public static class Program
     {
+        private static string GetLocation(string file)
+        {
+            return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Resources", file);
+        }
+
         public static void Main(string[] args)
         {
             if (args.Length != 1)
@@ -20,11 +25,11 @@ namespace snmptranslate
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
             registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_SMI), collector));
-            registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_CONF), collector));
-            registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TC), collector));
-            registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_MIB), collector));
-            registry.Import(Parser.Compile(new MemoryStream(Resources.SNMPv2_TM), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
             registry.Refresh();
             var tree = registry.Tree;
             if (args[0].Contains("::"))
