@@ -212,4 +212,22 @@ testEntity13 OBJECT-TYPE
             and networking software."
     ::= { test 13 }
 
+testTrap TRAP-TYPE
+    ENTERPRISE mytest
+    VARIABLES  { testEntity13 }
+    DESCRIPTION
+        "The fault tolerant power supply AC power loss for the specified chassis and bay location."
+
+    --#TYPE "Power Supply AC Power Loss (6069)"
+    --#SUMMARY "The power supply AC power loss in %d, bay %d, status %d, model %s, serial number %s, firmware %s."
+    --#ARGUMENTS {2, 3, 4, 5, 6, 8}
+    --#SEVERITY CRITICAL
+    --#TIMEINDEX 99
+    --#STATE NONOPERATIONAL
+    --#SIMPLE_SEVERITY CRITICAL
+    --#HWSTATUS_CATEGORY POWER
+    --#ACTION "Check the power source for the specified power supply."
+        
+    ::= 6069
+
 END

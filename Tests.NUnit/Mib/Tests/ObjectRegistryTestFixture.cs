@@ -576,6 +576,34 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var module = registry.Tree.LoadedModules.FirstOrDefault(mod => mod.Name == "HOST-RESOURCES-MIB");
             Assert.AreEqual(83, module.Objects.Count);
         }
+
+        [Test]
+        public void TestIEEE()
+        {
+            var registry = new SimpleObjectRegistry();
+            var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("IEEE8021-TC-MIB.txt"), collector));
+            registry.Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+
+            var module = registry.Tree.LoadedModules.FirstOrDefault(mod => mod.Name == "IEEE8021-TC-MIB");
+            Assert.AreEqual(0, module.Objects.Count);
+            var child = registry.Translate("IEEE8021-TC-MIB::ieee8021TcMib");
+            Assert.AreEqual(".1.3.111.2.802.1.1.1", ObjectIdentifier.Convert(child));
+            var parent = registry.Translate("IEEE8021-TC-MIB::ieee802dot1mibs");
+            Assert.AreEqual(".1.3.111.2.802.1.1", ObjectIdentifier.Convert(parent));
+
+            var definition = registry.Tree.Find("IEEE8021-TC-MIB", "ieee802dot1mibs");
+            Assert.AreEqual(1, definition.TextualForms.Count);
+
+            Assert.IsNull(registry.Tree.Find("IEEE8021-TC-MIB", "ieee802dot1_1"));
+        }
         // ReSharper restore InconsistentNaming
     }
 }
