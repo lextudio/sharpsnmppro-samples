@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{6475E834-1869-4713-9A67-C808B349A1D6}</ProjectGuid>
+    <ProjectGuid>{5AF59CAC-5473-4B95-8847-7230247D0871}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>snmptranslate</RootNamespace>
