@@ -1,1 +1,1 @@
-﻿#SNMP MIB Compiler Pro
+#SNMP MIB Compiler Pro
