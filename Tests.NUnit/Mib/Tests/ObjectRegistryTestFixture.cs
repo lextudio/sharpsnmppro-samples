@@ -1124,6 +1124,28 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             // IMPORTANT: since no more assistant OIDs exists, the textual form is now unique.
             Assert.AreEqual(1, definition.TextualForms.Count);
         }
+
+        [Test]
+        public void TestFoundry()
+        {
+            var registry = new SimpleObjectRegistry();
+            var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("HCNUM-TC.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("FOUNDRY-SN-ROOT-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("FOUNDRY-SN-AGENT-MIB.txt"), collector));
+            registry.Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+        }
+
         // ReSharper restore InconsistentNaming
 
         [Test]
