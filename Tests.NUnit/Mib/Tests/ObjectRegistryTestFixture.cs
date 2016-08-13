@@ -1144,6 +1144,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
+            Assert.AreEqual(11, collector.Warnings.Count); // for index type syntax.
         }
 
         // ReSharper restore InconsistentNaming
