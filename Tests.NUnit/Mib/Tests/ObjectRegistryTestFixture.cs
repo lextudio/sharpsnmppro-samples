@@ -1185,6 +1185,30 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         }
 
         [Test]
+        public void TestAugments()
+        {
+            var registry = new SimpleObjectRegistry();
+            var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector));
+            registry.Refresh();
+
+            var definition = registry.Tree.Find("IF-MIB", "ifXEntry");
+            var type = definition.DisplayEntity as ObjectTypeMacro;
+            Assert.IsNotNull(type);
+            Assert.IsNotNull(type.Augments);
+
+            Assert.AreEqual("ifEntry", type.Augments.Type.Name);
+            Assert.IsTrue(type.Augments.Type.ResolvedSyntax.GetLastType() is SequenceType);
+        }
+
+        [Test]
         public void TestDuplicateModule()
         {
             var registry = new SimpleObjectRegistry();
