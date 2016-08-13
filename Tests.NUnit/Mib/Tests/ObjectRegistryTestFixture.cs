@@ -199,6 +199,33 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity13", new Integer32(8401000)));
         }
 
+        /// <summary>
+        /// A test case to show how CHOICE type is handled.
+        /// </summary>
+        /// The object testEntity14 is defined with NetworkAddress syntax.
+        /// 
+        /// testEntity14 -- test -- OBJECT-TYPE
+        ///     SYNTAX      NetworkAddress
+        ///     MAX-ACCESS  read-only
+        ///     STATUS      current
+        ///     DESCRIPTION
+        ///             "A textual description of the entity.  This value should
+        ///             include the full name and version identification of
+        ///             the system's hardware type, software operating-system,
+        ///             and networking software."
+        ///     ::= { mytest 14 }
+        /// 
+        /// This NetworkAddress syntax is of CHOICE type and defined in RFC1155.
+        /// 
+        ///        NetworkAddress ::=
+        ///            CHOICE {
+        ///                internet
+        ///                    IpAddress
+        ///            }
+        /// 
+        ///        IpAddress ::=
+        ///            [APPLICATION 0]          -- in network-byte order
+        ///                IMPLICIT OCTET STRING (SIZE (4))
         [Test]
         public void TestChoice()
         {
@@ -209,18 +236,21 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Import(Parser.Compile(GetLocation("Test1.mib"), collector));
             registry.Refresh();
 
-            // Test CHOICE
 #if !TRIAL
             {
                 var choiceValue = (ObjectTypeMacro)registry.Tree.Find("TEST-MIB", "testEntity14").DisplayEntity;
-                var inner = choiceValue.ResolvedSyntax.GetLastType();
+                var resolvedSyntax = choiceValue.ResolvedSyntax;
+                var inner = resolvedSyntax.GetLastType();
+                Assert.AreEqual("NetworkAddress", inner.Name);
                 var inType = inner as ChoiceType;
                 Assert.IsNotNull(inType);
+                // IMPORTANT: this list only contains one element.
                 Assert.AreEqual(1, inType.ElementTypes.Count);
                 var item1 = inType.ElementTypes[0] as TaggedElementType;
                 Assert.AreEqual("internet", item1.Name);
                 var root = item1.Subtype.GetLastType();
-                Assert.AreEqual("Lextm.SharpSnmpPro.Mib.IpAddressType", root.ToString());
+                // IMPORTANT: the type of this element is IpAddress.
+                Assert.IsTrue(root is IpAddressType);
             }
 #endif
         }
@@ -247,9 +277,8 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         }
 
         [Test]
-        public void TestGetTextualFrom()
+        public void TestGetTextualForms()
         {
-            var oid = new uint[] { 1 };
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
             registry.Tree.Collector = collector;
@@ -259,149 +288,22 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
             registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
             registry.Refresh();
-            string result = registry.Translate(oid);
-            Assert.AreEqual("::iso", result);
-        }
-        [Test]
-        public void TestGetTextualForm()
-        {
-            var oid2 = new uint[] { 1, 3, 6, 1, 2, 1, 10 };
-            var registry = new SimpleObjectRegistry();
-            var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Refresh();
-            string result2 = registry.Translate(oid2);
-            Assert.AreEqual("SNMPv2-SMI::transmission", result2);
-        }
+            Assert.AreEqual("::iso", registry.Translate(new uint[] { 1 }));
+            Assert.AreEqual(new uint[] { 1 }, registry.Translate("::iso"));
 
-        [Test]
-        public void TestSNMPv2MIBTextual()
-        {
-            var oid = new uint[] { 1, 3, 6, 1, 2, 1, 1 };
-            var registry = new SimpleObjectRegistry();
-            var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Refresh();
-            string result = registry.Translate(oid);
-            Assert.AreEqual("SNMPv2-MIB::system", result);
-        }
+            Assert.AreEqual("SNMPv2-SMI::transmission", registry.Translate(new uint[] { 1, 3, 6, 1, 2, 1, 10 }));
+            Assert.AreEqual(new uint[] { 1, 3, 6, 1, 2, 1, 10 }, registry.Translate("SNMPv2-SMI::transmission"));
 
-        [Test]
-        public void TestSNMPv2TMTextual()
-        {
-            var registry = new SimpleObjectRegistry();
-            var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Refresh();
-            uint[] old = registry.Translate("SNMPv2-SMI::snmpDomains");
-            string result = registry.Translate(ObjectIdentifier.AppendTo(old, 1));
-            Assert.AreEqual("SNMPv2-TM::snmpUDPDomain", result);
-        }
+            Assert.AreEqual("SNMPv2-MIB::system", registry.Translate(new uint[] { 1, 3, 6, 1, 2, 1, 1 }));
 
-        [Test]
-        public void TestIso()
-        {
-            var expected = new uint[] { 1 };
-            const string textual = "::iso";
-            var registry = new SimpleObjectRegistry();
-            var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Refresh();
-            uint[] result = registry.Translate(textual);
-            Assert.AreEqual(expected, result);
-        }
+            Assert.AreEqual("SNMPv2-TM::snmpUDPDomain", registry.Translate(ObjectIdentifier.AppendTo(registry.Translate("SNMPv2-SMI::snmpDomains"), 1)));
+            Assert.AreEqual(new uint[] { 1, 3, 6, 1, 6, 1, 1 }, registry.Translate("SNMPv2-TM::snmpUDPDomain"));
 
-        [Test]
-        public void TestTransmission()
-        {
-            var expected = new uint[] { 1, 3, 6, 1, 2, 1, 10 };
-            const string textual = "SNMPv2-SMI::transmission";
-            var registry = new SimpleObjectRegistry();
-            var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Refresh();
-            uint[] result = registry.Translate(textual);
-            Assert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void TestZeroDotZero()
-        {
-            var registry = new SimpleObjectRegistry();
-            var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Refresh();
             Assert.AreEqual(new uint[] { 0 }, registry.Translate("::ccitt"));
-            const string textual = "SNMPv2-SMI::zeroDotZero";
-            var expected = new uint[] { 0, 0 };
-            Assert.AreEqual(textual, registry.Translate(expected));
-            Assert.AreEqual(expected, registry.Translate(textual));
-        }
+            Assert.AreEqual("SNMPv2-SMI::zeroDotZero", registry.Translate(new uint[] { 0, 0 }));
+            Assert.AreEqual(new uint[] { 0, 0 }, registry.Translate("SNMPv2-SMI::zeroDotZero"));
 
-        [Test]
-        public void TestSNMPv2MIBNumerical()
-        {
-            var expected = new uint[] { 1, 3, 6, 1, 2, 1, 1 };
-            const string textual = "SNMPv2-MIB::system";
-            var registry = new SimpleObjectRegistry();
-            var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Refresh();
-            uint[] result = registry.Translate(textual);
-            Assert.AreEqual(expected, result);
-        }
-
-        [Test]
-        public void TestSNMPv2TMNumerical()
-        {
-            var expected = new uint[] { 1, 3, 6, 1, 6, 1, 1 };
-            const string textual = "SNMPv2-TM::snmpUDPDomain";
-            var registry = new SimpleObjectRegistry();
-            var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Refresh();
-            uint[] result = registry.Translate(textual);
-            Assert.AreEqual(expected, result);
+            Assert.AreEqual(new uint[] { 1, 3, 6, 1, 2, 1, 1 }, registry.Translate("SNMPv2-MIB::system"));
         }
 
         [Test]
@@ -432,7 +334,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestsysORTable0()
         {
-            var expected = new uint[] { 1, 3, 6, 1, 2, 1, 1, 9, 0 };
+            var id = new uint[] { 1, 3, 6, 1, 2, 1, 1, 9, 0 };
             const string name = "SNMPv2-MIB::sysORTable.0";
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
@@ -443,26 +345,8 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
             registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
             registry.Refresh();
-            uint[] id = registry.Translate(name);
-            Assert.AreEqual(expected, id);
-        }
-
-        [Test]
-        public void TestsysORTable0Reverse()
-        {
-            var id = new uint[] { 1, 3, 6, 1, 2, 1, 1, 9, 0 };
-            const string expected = "SNMPv2-MIB::sysORTable.0";
-            var registry = new SimpleObjectRegistry();
-            var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Refresh();
-            string value = registry.Translate(id);
-            Assert.AreEqual(expected, value);
+            Assert.AreEqual(id, registry.Translate(name));
+            Assert.AreEqual(name, registry.Translate(id));
         }
 
         [Test]
@@ -577,8 +461,49 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual(83, module.Objects.Count);
         }
 
+        /// <summary>
+        /// A test case for complex OID assignments.
+        /// </summary>
+        /// <remarks>
+        /// The OID assignments are defined as below. As ieee802dot1mibs is defined after ieee8021TcMib, the resolution requires special treatment.
+        /// 
+        /// ieee8021TcMib MODULE-IDENTITY
+        ///     LAST-UPDATED "200810150000Z" -- October 15, 2008
+        ///     ORGANIZATION "IEEE 802.1 Working Group"
+        ///     CONTACT-INFO
+        ///         "  WG-URL: http://grouper.ieee.org/groups/802/1/index.html
+        ///          WG-EMail: stds-802-1@ieee.org
+        /// 
+        ///           Contact: David Levi
+        ///            Postal: 4655 GREAT AMERICA PARKWAY
+        ///                    SANTA CLARA, CALIFORNIA
+        ///                    95054
+        ///                    USA
+        ///               Tel: +1-408-495-5138
+        ///            E-mail: dlevi @nortel.com"
+        ///     DESCRIPTION
+        ///         "Textual conventions used throughout the various IEEE 802.1 MIB
+        ///          modules.
+        /// 
+        ///          Unless otherwise indicated, the references in this MIB
+        ///          module are to IEEE 802.1Q-2005 as amended by IEEE 802.1ad,
+        ///          IEEE 802.1ak, IEEE 802.1ag and IEEE 802.1ah.
+        /// 
+        ///          Copyright (C) IEEE.
+        ///          This version of this MIB module is part of IEEE802.1Q;
+        ///          see the draft itself for full legal notices."
+        ///     REVISION     "200810150000Z" -- October 15, 2008
+        ///     DESCRIPTION
+        ///          "Initial version."
+        ///     ::= { org ieee(111) standards-association-numbers-series-standards(2)
+        ///           lan-man-stds(802) ieee802dot1(1) 1 1 }
+        /// 
+        /// ieee802dot1mibs OBJECT IDENTIFIER
+        ///     ::= { org ieee(111) standards-association-numbers-series-standards(2)
+        ///           lan-man-stds(802) ieee802dot1(1) 1 }
+        /// </remarks>
         [Test]
-        public void TestIEEE()
+        public void TestObjectIdentifierAssignments()
         {
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
@@ -599,10 +524,12 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var parent = registry.Translate("IEEE8021-TC-MIB::ieee802dot1mibs");
             Assert.AreEqual(".1.3.111.2.802.1.1", ObjectIdentifier.Convert(parent));
 
-            var definition = registry.Tree.Find("IEEE8021-TC-MIB", "ieee802dot1mibs");
-            Assert.AreEqual(1, definition.TextualForms.Count);
-
+            // IMPORTANT: assistant OIDs were utilized in 1.1.1 and older releases to support such scenarios. They are no longer required in 1.1.2 and above.
             Assert.IsNull(registry.Tree.Find("IEEE8021-TC-MIB", "ieee802dot1_1"));
+
+            var definition = registry.Tree.Find("IEEE8021-TC-MIB", "ieee802dot1mibs");
+            // IMPORTANT: since no more assistant OIDs exists, the textual form is now unique.
+            Assert.AreEqual(1, definition.TextualForms.Count);
         }
         // ReSharper restore InconsistentNaming
     }
