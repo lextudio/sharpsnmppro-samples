@@ -1148,6 +1148,50 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 
         // ReSharper restore InconsistentNaming
 
+        /// <summary> 
+        /// A test case for IMPLIED keyword. 
+        /// </summary> 
+        /// <remarks> 
+        /// The table entry definition is as below, 
+        ///  
+        /// snmpTargetAddrEntry OBJECT-TYPE 
+        ///     SYNTAX SnmpTargetAddrEntry 
+        ///     MAX-ACCESS not-accessible 
+        ///     STATUS      current 
+        ///     DESCRIPTION 
+        ///         "A transport address to be used in the generation 
+        ///          of SNMP operations. 
+        ///  
+        ///          Entries in the snmpTargetAddrTable are created and 
+        ///          deleted using the snmpTargetAddrRowStatus object." 
+        ///     INDEX { IMPLIED snmpTargetAddrName } 
+        ///     ::= { snmpTargetAddrTable 1 } 
+        /// </remarks> 
+        [Test]
+        public void TestImplied()
+        {
+            var registry = new SimpleObjectRegistry();
+            var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMP-FRAMEWORK-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMP-TARGET-MIB.txt"), collector));
+            registry.Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+
+            var definition = registry.Tree.Find("SNMP-TARGET-MIB", "snmpTargetAddrEntry");
+            var type = definition.DisplayEntity as ObjectTypeMacro;
+            Assert.IsNotNull(type);
+            Assert.AreEqual(1, type.IndexList.Count);
+            var index = type.IndexList[0];
+            Assert.AreEqual("snmpTargetAddrName", index.Type.Name);
+            Assert.IsTrue(index.Implied);
+        }
+
         [Test]
         public void TestDuplicateModule()
         {
@@ -1165,6 +1209,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var item = collector.Errors.ElementAt(0);
             Assert.AreEqual(ErrorCategory.DuplicateModule, item.Category);
         }
+        // ReSharper restore InconsistentNaming
     }
 }
 #pragma warning restore 1591
