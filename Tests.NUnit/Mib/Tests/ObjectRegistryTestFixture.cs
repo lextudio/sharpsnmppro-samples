@@ -883,6 +883,10 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
             registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
             registry.Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+            Assert.AreEqual(0, collector.Warnings.Count);
+
             Assert.AreEqual("::iso", registry.Translate(new uint[] { 1 }));
             Assert.AreEqual(new uint[] { 1 }, registry.Translate("::iso"));
 
@@ -904,7 +908,6 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestsysORTable()
         {
-            const string name = "SNMPv2-MIB::sysORTable";
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
             registry.Tree.Collector = collector;
@@ -914,7 +917,11 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
             registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
             registry.Refresh();
-            uint[] id = registry.Translate(name);
+
+            Assert.AreEqual(0, collector.Errors.Count);
+            Assert.AreEqual(0, collector.Warnings.Count);
+
+            uint[] id = registry.Translate("SNMPv2-MIB::sysORTable");
 #if !TRIAL
             Assert.IsTrue(registry.ValidateTable(new ObjectIdentifier(id)));
 #endif
@@ -924,38 +931,10 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual(DefinitionType.Table, node.Type);
             Assert.AreEqual(DefinitionType.Entry, node1.Type);
             Assert.AreEqual(DefinitionType.Column, node2.Type);
-        }
 
-        [Test]
-        public void TestsysORTable0()
-        {
-            var id = new uint[] { 1, 3, 6, 1, 2, 1, 1, 9, 0 };
-            const string name = "SNMPv2-MIB::sysORTable.0";
-            var registry = new SimpleObjectRegistry();
-            var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Refresh();
-            Assert.AreEqual(id, registry.Translate(name));
-            Assert.AreEqual(name, registry.Translate(id));
-        }
+            Assert.AreEqual(new uint[] { 1, 3, 6, 1, 2, 1, 1, 9, 0 }, registry.Translate("SNMPv2-MIB::sysORTable.0"));
+            Assert.AreEqual("SNMPv2-MIB::sysORTable.0", registry.Translate(new uint[] { 1, 3, 6, 1, 2, 1, 1, 9, 0 }));
 
-        [Test]
-        public void TestsnmpMIB()
-        {
-            var registry = new SimpleObjectRegistry();
-            var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Refresh();
 #if !TRIAL
             Assert.IsFalse(registry.ValidateTable(new ObjectIdentifier(registry.Translate("SNMPv2-MIB::snmpMIB"))));
 #endif
@@ -976,6 +955,10 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
             registry.Import(modules);
             registry.Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+            Assert.AreEqual(0, collector.Warnings.Count);
+
             uint[] id = registry.Translate(name);
 
             Assert.AreEqual(new uint[] { 1, 3, 6, 1, 4, 1, 17471 }, id);
@@ -998,6 +981,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
             registry.Import(Parser.Compile(GetLocation("IEEE802DOT11-MIB.mib"), collector));
             registry.Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+            Assert.AreEqual(3, collector.Warnings.Count);
 
             Assert.AreEqual("IEEE802dot11-MIB::dot11SMTnotification", registry.Translate(new uint[] { 1, 2, 840, 10036, 1, 6 }));
             uint[] id = registry.Translate("IEEE802dot11-MIB::dot11SMTnotification");
@@ -1026,6 +1012,8 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Import(Parser.Compile(GetLocation("ALLIEDTELESYN-MIB.mib"), collector));
             registry.Refresh();
 
+            Assert.AreEqual(2, collector.Warnings.Count);
+
             var o = registry.Tree.Search(ObjectIdentifier.Convert("3.6.1.2.1.25"));
             Assert.IsNull(o.Definition);
             Assert.AreEqual(".3.6.1.2.1.25", o.AlternativeText);
@@ -1049,6 +1037,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
+            Assert.AreEqual(0, collector.Warnings.Count);
 
             var module = registry.Tree.LoadedModules.FirstOrDefault(mod => mod.Name == "HOST-RESOURCES-MIB");
             Assert.AreEqual(83, module.Objects.Count);
@@ -1109,6 +1098,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
+            Assert.AreEqual(4, collector.Warnings.Count);
 
             var module = registry.Tree.LoadedModules.FirstOrDefault(mod => mod.Name == "IEEE8021-TC-MIB");
             Assert.AreEqual(0, module.Objects.Count);
@@ -1183,6 +1173,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
+            Assert.AreEqual(0, collector.Warnings.Count);
 
             var definition = registry.Tree.Find("SNMP-TARGET-MIB", "snmpTargetAddrEntry");
             var type = definition.DisplayEntity as ObjectTypeMacro;
@@ -1207,6 +1198,8 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Refresh();
 
             Assert.AreEqual(4, collector.Errors.Count);
+            Assert.AreEqual(0, collector.Warnings.Count);
+
             var item = collector.Errors.ElementAt(0);
             Assert.AreEqual(ErrorCategory.DuplicateModule, item.Category);
         }
