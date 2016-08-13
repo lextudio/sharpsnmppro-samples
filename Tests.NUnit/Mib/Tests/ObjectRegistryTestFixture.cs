@@ -1125,6 +1125,24 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual(1, definition.TextualForms.Count);
         }
         // ReSharper restore InconsistentNaming
+
+        [Test]
+        public void TestDuplicateModule()
+        {
+            var registry = new SimpleObjectRegistry();
+            var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("empty.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
+            registry.Refresh();
+
+            Assert.AreEqual(4, collector.Errors.Count);
+            var item = collector.Errors.ElementAt(0);
+            Assert.AreEqual(ErrorCategory.DuplicateModule, item.Category);
+        }
     }
 }
 #pragma warning restore 1591
