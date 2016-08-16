@@ -1205,6 +1205,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.IsNotNull(type.Augments);
 
             Assert.AreEqual("ifEntry", type.Augments.Type.Name);
+            Assert.AreEqual("IF-MIB", type.Augments.Type.Module.Name);
             Assert.IsTrue(type.Augments.Type.ResolvedSyntax.GetLastType() is SequenceType);
         }
 
