@@ -104,6 +104,23 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.IsTrue(obj.Syntax is UnknownType);
 
             // IMPORTANT: type resolution shows that OCTET STRING is the base syntax type of DisplayString.
+            var constrainted = obj.ResolvedSyntax as ConstraintedType; // Syntax = (DisplayString) + (SIZE (0..255))
+            Assert.IsNotNull(constrainted);
+            Assert.IsNotNull(constrainted.Constraint);
+
+            var assignment = constrainted.BaseType as TypeAssignment;
+            Assert.IsNotNull(assignment);
+
+            var textual = assignment.BaseType as TextualConventionMacro; // DisplayString = (OCTET STRING) + (SIZE (0..255))
+            Assert.IsNotNull(textual);
+
+            var constrainted2 = textual.BaseType as ConstraintedType;
+            Assert.IsNotNull(constrainted2);
+            Assert.IsNotNull(constrainted2.Constraint);
+
+            var octet = constrainted2.BaseType as OctetStringType; // OCTET STRING pure type has no constraint.
+            Assert.IsNotNull(octet);
+
             var type = obj.ResolvedSyntax.GetLastType();
             Assert.IsTrue(type is OctetStringType);
 
