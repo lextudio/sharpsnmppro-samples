@@ -101,7 +101,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual(SnmpType.OctetString, obj.BaseSyntax);
 #endif
 #if !TRIAL
-            Assert.IsTrue(obj.Syntax is UnknownType);
+            Assert.IsTrue(obj.Syntax is ConstraintedType);
 
             // IMPORTANT: type resolution shows that OCTET STRING is the base syntax type of DisplayString.
             var constrainted = obj.ResolvedSyntax as ConstraintedType; // Syntax = (DisplayString) + (SIZE (0..255))
