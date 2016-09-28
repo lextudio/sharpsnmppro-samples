@@ -526,13 +526,19 @@
     <EmbeddedResource Include="sharpsnmppro.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\FOUNDRY-SN-AGENT-MIB.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\FOUNDRY-SN-ROOT-MIB.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\IEEE8021-TC-MIB.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <Content Include="Resources\IEEE8021-TC-MIB.txt">
+    <Content Include="Resources\Invalid.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

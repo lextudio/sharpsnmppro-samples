@@ -1243,8 +1243,25 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual(0, collector.Warnings.Count);
 
             var item = collector.Errors.ElementAt(0);
-            Assert.AreEqual(ErrorCategory.DuplicateModule, item.Category);
+            //Assert.AreEqual(ErrorCategory.DuplicateModule, item.Category);
         }
+
+        [Test]
+        public void TestInvalidDocument()
+        {
+            var registry = new SimpleObjectRegistry();
+            var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;
+            var file = GetLocation("Invalid.txt");
+            registry.Import(Parser.Compile(file, collector));
+            registry.Refresh();
+            Assert.AreEqual(1, collector.Errors.Count);
+
+            var item = collector.Errors.ElementAt(0);
+            //Assert.AreEqual(ErrorCategory.SematicError, item.Category);
+            Assert.AreEqual($"{file} (1,6) : error S0001 : invalid token is", item.ToString());
+        }
+
         // ReSharper restore InconsistentNaming
     }
 }
