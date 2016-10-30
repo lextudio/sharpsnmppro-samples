@@ -939,6 +939,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual("SNMPv2-SMI::zeroDotZero", registry.Translate(new uint[] { 0, 0 }));
             Assert.AreEqual(new uint[] { 0, 0 }, registry.Translate("SNMPv2-SMI::zeroDotZero"));
 
+            var item = registry.Tree.Find("SNMPv2-SMI", "zeroDotZero");
+            Assert.IsNotNull(item.DisplayEntity.GetObjectIdentifier());
+
             Assert.AreEqual(new uint[] { 1, 3, 6, 1, 2, 1, 1 }, registry.Translate("SNMPv2-MIB::system"));
         }
 
