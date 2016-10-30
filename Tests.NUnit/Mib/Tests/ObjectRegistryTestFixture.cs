@@ -108,6 +108,16 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.IsNotNull(constrainted);
             Assert.IsNotNull(constrainted.Constraint);
 
+            {
+                var specs = constrainted.Constraint.ElementSetSpecs;
+                var size = specs.LeftElement.Element as SizeConstraintElement;
+                Assert.IsNotNull(size);
+                var range = size.Constraint.ElementSetSpecs.LeftElement.Element as ValueRangeConstraintElement;
+                Assert.IsNotNull(range);
+                Assert.AreEqual("0", range.ValueRange.MinValue.ToString());
+                Assert.AreEqual("255", range.ValueRange.MaxValue.ToString());
+            }
+
             var assignment = constrainted.BaseType as TypeAssignment;
             Assert.IsNotNull(assignment);
 
@@ -117,6 +127,16 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var constrainted2 = textual.BaseType as ConstraintedType;
             Assert.IsNotNull(constrainted2);
             Assert.IsNotNull(constrainted2.Constraint);
+
+            {
+                var specs = constrainted2.Constraint.ElementSetSpecs;
+                var size = specs.LeftElement.Element as SizeConstraintElement;
+                Assert.IsNotNull(size);
+                var range = size.Constraint.ElementSetSpecs.LeftElement.Element as ValueRangeConstraintElement;
+                Assert.IsNotNull(range);
+                Assert.AreEqual("0", range.ValueRange.MinValue.ToString());
+                Assert.AreEqual("255", range.ValueRange.MaxValue.ToString());
+            }
 
             var octet = constrainted2.BaseType as OctetStringType; // OCTET STRING pure type has no constraint.
             Assert.IsNotNull(octet);
