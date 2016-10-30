@@ -940,7 +940,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual(new uint[] { 0, 0 }, registry.Translate("SNMPv2-SMI::zeroDotZero"));
 
             var item = registry.Tree.Find("SNMPv2-SMI", "zeroDotZero");
-            Assert.IsNotNull(item.DisplayEntity.GetObjectIdentifier());
+            Assert.AreEqual(new uint[] { 0, 0 }, item.DisplayEntity.GetObjectIdentifier());
 
             Assert.AreEqual(new uint[] { 1, 3, 6, 1, 2, 1, 1 }, registry.Translate("SNMPv2-MIB::system"));
         }
@@ -1034,6 +1034,35 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual(id1, registry.Translate(name1));
             Assert.AreEqual(name1, registry.Translate(id1));
         }
+
+        [Test]
+        public void TestJVM_MANAGEMENT_MIB()
+        {
+            var registry = new SimpleObjectRegistry();
+            var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;
+            registry.Import(Parser.Compile(GetLocation("RFC-1212"), collector));
+            registry.Import(Parser.Compile(GetLocation("RFC1155-SMI.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("RFC1213-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("JVM-MANAGEMENT-MIB.mib"), collector));
+            registry.Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+            Assert.AreEqual(4, collector.Warnings.Count);
+
+            Assert.AreEqual("JVM-MANAGEMENT-MIB::jmgt", registry.Translate(new uint[] { 1, 3, 6, 1, 4, 1, 42, 2, 145 }));
+            uint[] id = registry.Translate("JVM-MANAGEMENT-MIB::jmgt");
+            Assert.AreEqual(new uint[] { 1, 3, 6, 1, 4, 1, 42, 2, 145 }, id);
+
+            var item = registry.Tree.Find("JVM-MANAGEMENT-MIB", "jmgt");
+            Assert.AreEqual(new uint[] { 1, 3, 6, 1, 4, 1, 42, 2, 145 }, item.DisplayEntity.GetObjectIdentifier());
+        }
+
 
         [Test]
         public void TestALLIEDTELESYN_MIB()
