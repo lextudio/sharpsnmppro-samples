@@ -1053,8 +1053,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
+#if !TRIAL
             Assert.AreEqual(4, collector.Warnings.Count);
-
+#endif
             Assert.AreEqual("JVM-MANAGEMENT-MIB::jmgt", registry.Translate(new uint[] { 1, 3, 6, 1, 4, 1, 42, 2, 145 }));
             uint[] id = registry.Translate("JVM-MANAGEMENT-MIB::jmgt");
             Assert.AreEqual(new uint[] { 1, 3, 6, 1, 4, 1, 42, 2, 145 }, id);
@@ -1080,9 +1081,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
             registry.Import(Parser.Compile(GetLocation("ALLIEDTELESYN-MIB.mib"), collector));
             registry.Refresh();
-
+#if !TRIAL
             Assert.AreEqual(2, collector.Warnings.Count);
-
+#endif
             var o = registry.Tree.Search(ObjectIdentifier.Convert("3.6.1.2.1.25"));
             Assert.IsNull(o.Definition);
             Assert.AreEqual(".3.6.1.2.1.25", o.AlternativeText);
@@ -1106,8 +1107,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
+#if !TRIAL
             Assert.AreEqual(0, collector.Warnings.Count);
-
+#endif
             var module = registry.Tree.LoadedModules.FirstOrDefault(mod => mod.Name == "HOST-RESOURCES-MIB");
             Assert.AreEqual(83, module.Objects.Count);
         }
@@ -1203,7 +1205,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
+#if !TRIAL
             Assert.AreEqual(11, collector.Warnings.Count); // for index type syntax.
+#endif
         }
 
         // ReSharper restore InconsistentNaming
