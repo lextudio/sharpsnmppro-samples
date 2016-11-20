@@ -1249,12 +1249,15 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual(0, collector.Warnings.Count);
 
             var definition = registry.Tree.Find("SNMP-TARGET-MIB", "snmpTargetAddrEntry");
-            var type = definition.DisplayEntity as ObjectTypeMacro;
+            var type = definition.DisplayEntity as IObjectTypeMacro;
             Assert.IsNotNull(type);
-            Assert.AreEqual(1, type.IndexList.Count);
-            var index = type.IndexList[0];
+#if !TRIAL
+            var real = (ObjectTypeMacro)type;
+            Assert.AreEqual(1, real.IndexList.Count);
+            var index = real.IndexList[0];
             Assert.AreEqual("snmpTargetAddrName", index.Type.Name);
             Assert.IsTrue(index.Implied);
+#endif
         }
 
         [Test]
@@ -1273,13 +1276,16 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Refresh();
 
             var definition = registry.Tree.Find("IF-MIB", "ifXEntry");
-            var type = definition.DisplayEntity as ObjectTypeMacro;
+            var type = definition.DisplayEntity as IObjectTypeMacro;
             Assert.IsNotNull(type);
-            Assert.IsNotNull(type.Augments);
+#if !TRIAL
+            var real = (ObjectTypeMacro)type;
+            Assert.IsNotNull(real.Augments);
 
-            Assert.AreEqual("ifEntry", type.Augments.Type.Name);
-            Assert.AreEqual("IF-MIB", type.Augments.Type.Module.Name);
-            Assert.IsTrue(type.Augments.Type.ResolvedSyntax.GetLastType() is SequenceType);
+            Assert.AreEqual("ifEntry", real.Augments.Type.Name);
+            Assert.AreEqual("IF-MIB", real.Augments.Type.Module.Name);
+            Assert.IsTrue(real.Augments.Type.ResolvedSyntax.GetLastType() is SequenceType);
+#endif
         }
 
         [Test]
