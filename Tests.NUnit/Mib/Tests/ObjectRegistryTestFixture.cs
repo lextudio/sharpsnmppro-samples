@@ -1206,8 +1206,8 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 
             Assert.AreEqual(1, collector.Errors.Count);
             var error = collector.Errors.ElementAt(0);
-            Assert.AreEqual(ErrorCategory.MissingParentId, error.Category);
 #if !TRIAL
+            Assert.AreEqual(ErrorCategory.MissingParentId, error.Category);
             Assert.AreEqual(5, collector.Warnings.Count); // for index type syntax.
 #endif
         }
