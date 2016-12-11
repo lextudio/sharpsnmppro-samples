@@ -1023,8 +1023,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
+#if !TRIAL
             Assert.AreEqual(3, collector.Warnings.Count);
-
+#endif
             Assert.AreEqual("IEEE802dot11-MIB::dot11SMTnotification", registry.Translate(new uint[] { 1, 2, 840, 10036, 1, 6 }));
             uint[] id = registry.Translate("IEEE802dot11-MIB::dot11SMTnotification");
             Assert.AreEqual(new uint[] { 1, 2, 840, 10036, 1, 6 }, id);
