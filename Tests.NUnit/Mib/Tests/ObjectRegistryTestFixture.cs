@@ -1010,7 +1010,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         {
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;            
+            registry.Tree.Collector = collector;
             registry.Import(Parser.Compile(GetLocation("RFC-1212"), collector));
             registry.Import(Parser.Compile(GetLocation("RFC1155-SMI.txt"), collector));
             registry.Import(Parser.Compile(GetLocation("RFC1213-MIB.txt"), collector));
@@ -1325,6 +1325,38 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var item = collector.Errors.ElementAt(0);
             //Assert.AreEqual(ErrorCategory.SematicError, item.Category);
             Assert.AreEqual($"{file} (1,6) : error S0001 : invalid token is", item.ToString());
+        }
+
+        [Test]
+        public void TestDocs()
+        {
+            var registry = new SimpleObjectRegistry();
+            var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMP-FRAMEWORK-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("DOCS-IF-MIB.mib"), collector));
+            registry.Import(Parser.Compile(GetLocation("DOCS-IF-EXT-MIB.mib"), collector));
+            registry.Import(Parser.Compile(GetLocation("DOCS-CABLE-DEVICE-MIB.mib"), collector));
+            registry.Import(Parser.Compile(GetLocation("DOCS-CABLE-DEVICE-TRAP-MIB.mib"), collector));
+            registry.Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+#if !TRIAL
+            Assert.AreEqual(0, collector.Warnings.Count);
+#endif
+            var definition = registry.Tree.Find("DOCS-CABLE-DEVICE-TRAP-MIB", "docsDevCmInitTLVUnknownTrap");
+            Assert.AreEqual("DOCS-CABLE-DEVICE-TRAP-MIB::docsDevCmInitTLVUnknownTrap", registry.Translate(definition.GetNumericalForm()));
+#if !TRIAL
+            var type = definition.DisplayEntity as NotificationTypeMacro;
+            Assert.IsNotNull(type);
+#endif
         }
 
         // ReSharper restore InconsistentNaming
