@@ -868,6 +868,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Import(Parser.Compile(GetLocation("Test1.mib"), collector));
             registry.Refresh();
 
+            Assert.AreEqual(0, collector.Errors.Count);
+            Assert.AreEqual(2, collector.Warnings.Count);
+
 #if !TRIAL
             var choiceValue = (ObjectTypeMacro)registry.Tree.Find("TEST-MIB", "testEntity14").DisplayEntity;
             var resolvedSyntax = choiceValue.ResolvedSyntax;
@@ -1170,7 +1173,10 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
-            Assert.AreEqual(4, collector.Warnings.Count);
+            Assert.AreEqual(8, collector.Warnings.Count);
+
+            var zero = registry.Translate(new uint[] { 0, 0 });
+            Assert.AreEqual("SNMPv2-SMI::zeroDotZero", zero);
 
             var module = registry.Tree.LoadedModules.FirstOrDefault(mod => mod.Name == "IEEE8021-TC-MIB");
             Assert.AreEqual(0, module.Objects.Count);
@@ -1205,12 +1211,15 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             registry.Import(Parser.Compile(GetLocation("FOUNDRY-SN-AGENT-MIB.txt"), collector));
             registry.Refresh();
 
-            Assert.AreEqual(1, collector.Errors.Count);
-            var error = collector.Errors.ElementAt(0);
+            Assert.AreEqual(0, collector.Errors.Count);
 #if !TRIAL
-            Assert.AreEqual(ErrorCategory.MissingParentId, error.Category);
-            Assert.AreEqual(5, collector.Warnings.Count); // for index type syntax.
+            Assert.AreEqual(10, collector.Warnings.Count);
 #endif
+//            var error = collector.Errors.ElementAt(0);
+//#if !TRIAL
+//            Assert.AreEqual(ErrorCategory.MissingParentId, error.Category);
+//            Assert.AreEqual(5, collector.Warnings.Count); // for index type syntax.
+//#endif
         }
 
         // ReSharper restore InconsistentNaming
@@ -1308,7 +1317,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual(0, collector.Warnings.Count);
 
             var item = collector.Errors.ElementAt(0);
-            //Assert.AreEqual(ErrorCategory.DuplicateModule, item.Category);
+#if !TRIAL
+            Assert.AreEqual(ErrorCategory.DuplicateModule, item.Category);
+#endif
         }
 
         [Test]
@@ -1328,7 +1339,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         }
 
         [Test]
-        public void TestDocs()
+        public void TestDocsCableDeviceTrapMib()
         {
             var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
@@ -1349,7 +1360,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 
             Assert.AreEqual(0, collector.Errors.Count);
 #if !TRIAL
-            Assert.AreEqual(0, collector.Warnings.Count);
+            Assert.AreEqual(2, collector.Warnings.Count);
 #endif
             var definition = registry.Tree.Find("DOCS-CABLE-DEVICE-TRAP-MIB", "docsDevCmInitTLVUnknownTrap");
             Assert.AreEqual("DOCS-CABLE-DEVICE-TRAP-MIB::docsDevCmInitTLVUnknownTrap", registry.Translate(definition.GetNumericalForm()));
@@ -1357,6 +1368,128 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var type = definition.DisplayEntity as NotificationTypeMacro;
             Assert.IsNotNull(type);
 #endif
+        }
+
+        [Test]
+        public void TestSonicWallFirewallTrapMibMib()
+        {
+            var registry = new SimpleObjectRegistry();
+            var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SONICWALL-SMI.mib"), collector));
+            registry.Import(Parser.Compile(GetLocation("SONICWALL-FIREWALL-TRAP-MIB.mib"), collector));
+            registry.Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+            Assert.AreEqual(1, collector.Warnings.Count);
+        }
+
+        [Test]
+        public void TestADSL()
+        {
+            var collector = new ErrorRegistry();
+            var registry = new SimpleObjectRegistry();
+            registry.Tree.Collector = collector;
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("PERFHIST-TC-MIB.mib"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMP-FRAMEWORK-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("ADSL-TC-MIB.mib"), collector));
+            registry.Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+#if !TRIAL
+            Assert.AreEqual(1, collector.Warnings.Count);
+#endif
+            //uint[] id = registry.Translate("ADSL-TC-MIB::adsltcmib");
+
+            //Assert.AreEqual(new uint[] { 1, 3, 6, 1, 4, 1, 17471 }, id);
+            //Assert.AreEqual("ADSL-TC-MIB::adsltcmib", registry.Translate(id));
+        }
+
+        [Test]
+        public void TestIEEE8023LAG_MIB()
+        {
+            var registry = new SimpleObjectRegistry();
+            var collector = new ErrorRegistry();
+            registry.Tree.Collector = collector;
+            registry.Import(Parser.Compile(GetLocation("RFC-1212"), collector));
+            registry.Import(Parser.Compile(GetLocation("RFC1155-SMI.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("RFC1213-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("RFC1271-MIB.mib"), collector));
+            registry.Import(Parser.Compile(GetLocation("RFC-1215.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("PERFHIST-TC-MIB.mib"), collector));
+            registry.Import(Parser.Compile(GetLocation("SNMP-FRAMEWORK-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("RMON-MIB.txt"), collector));
+            registry.Import(Parser.Compile(GetLocation("TOKEN-RING-RMON-MIB.mib"), collector));
+            registry.Import(Parser.Compile(GetLocation("RMON2-MIB.mib"), collector));
+            registry.Import(Parser.Compile(GetLocation("BRIDGE-MIB.mib"), collector));
+            registry.Import(Parser.Compile(GetLocation("P-BRIDGE-MIB.mib"), collector));
+            registry.Import(Parser.Compile(GetLocation("Q-BRIDGE-MIB.mib"), collector));
+            registry.Import(Parser.Compile(GetLocation("IEEE8023-LAG-MIB.mib"), collector));
+            registry.Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+#if !TRIAL
+            Assert.AreEqual(26, collector.Warnings.Count);
+#endif
+            {
+                Assert.AreEqual("IEEE8023-LAG-MIB::lagMIB", registry.Translate(new uint[] { 1, 2, 840, 10006, 300, 43 }));
+                uint[] id = registry.Translate("IEEE8023-LAG-MIB::lagMIB");
+                Assert.AreEqual(new uint[] { 1, 2, 840, 10006, 300, 43 }, id);
+            }
+            {
+                Assert.AreEqual("IEEE8023-LAG-MIB::802dot3", registry.Translate(new uint[] { 1, 2, 840, 10006 }));
+                uint[] id = registry.Translate("IEEE8023-LAG-MIB::802dot3");
+                Assert.AreEqual(new uint[] { 1, 2, 840, 10006 }, id);
+            }
+        }
+
+        [Test]
+        public void TestCisco()
+        {
+            var collector = new ErrorRegistry();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("PERFHIST-TC-MIB.mib"), collector))
+                .Import(Parser.Compile(GetLocation("SNMP-FRAMEWORK-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("CISCO-SMI.mib"), collector))
+                .Import(Parser.Compile(GetLocation("CISCO-IETF-NAT-MIB.mib"), collector))
+                .Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+#if !TRIAL
+            Assert.AreEqual(2, collector.Warnings.Count);
+#endif
+            //foreach (var warning in collector.Warnings)
+            //{
+            //    Assert.AreEqual(WarningCategory.WrongIndexType, warning.Category);
+            //}
         }
 
         // ReSharper restore InconsistentNaming
