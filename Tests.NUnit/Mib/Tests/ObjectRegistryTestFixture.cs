@@ -1181,9 +1181,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var module = registry.Tree.LoadedModules.FirstOrDefault(mod => mod.Name == "IEEE8021-TC-MIB");
             Assert.AreEqual(0, module.Objects.Count);
             var child = registry.Translate("IEEE8021-TC-MIB::ieee8021TcMib");
-            Assert.AreEqual(".1.3.111.2.802.1.1.1", ObjectIdentifier.Convert(child));
+            Assert.AreEqual("1.3.111.2.802.1.1.1", ObjectIdentifier.Convert(child));
             var parent = registry.Translate("IEEE8021-TC-MIB::ieee802dot1mibs");
-            Assert.AreEqual(".1.3.111.2.802.1.1", ObjectIdentifier.Convert(parent));
+            Assert.AreEqual("1.3.111.2.802.1.1", ObjectIdentifier.Convert(parent));
 
             // IMPORTANT: assistant OIDs were utilized in 1.1.1 and older releases to support such scenarios. They are no longer required in 1.1.2 and above.
             Assert.IsNull(registry.Tree.Find("IEEE8021-TC-MIB", "ieee802dot1_1"));
@@ -1335,7 +1335,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 
             var item = collector.Errors.ElementAt(0);
             //Assert.AreEqual(ErrorCategory.SematicError, item.Category);
-            Assert.AreEqual($"{file} (1,6) : error S0001 : invalid token is", item.ToString());
+            Assert.AreEqual($"{file} (1,6) : error S0001 : Invalid token 'is'.", item.ToString());
         }
 
         [Test]
