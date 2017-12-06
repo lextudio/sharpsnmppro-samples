@@ -12,14 +12,16 @@ using System.IO;
 using System.Text;
 using Lextm.SharpSnmpLib;
 using NUnit.Framework;
-using Parser = Lextm.SharpSnmpPro.Mib.Parser2;
-using Lextm.SharpSnmpPro.Mib.Registry;
 using System.Linq;
 using System.Reflection;
 
 #pragma warning disable 1591
 namespace Lextm.SharpSnmpPro.Mib.Tests
 {
+    using Registry;
+    using Validation;
+    using Parser = Registry.Parser2;
+        
     [TestFixture]
     public class ObjectRegistryTestFixture
     {
