@@ -13,6 +13,7 @@ using System.Text;
 using Lextm.SharpSnmpLib;
 using NUnit.Framework;
 using Parser = Lextm.SharpSnmpPro.Mib.Parser2;
+using Lextm.SharpSnmpPro.Mib.Registry;
 using System.Linq;
 using System.Reflection;
 
