@@ -1,7 +1,8 @@
 ﻿using Lextm.SharpSnmpLib;
-using Lextm.SharpSnmpPro.Mib;
+using Lextm.SharpSnmpPro.Mib.Registry;
 using System.IO;
 using System.Web.Mvc;
+using Lextm.SharpSnmpPro.Mib.Validation;
 
 namespace SimpleWeb.Controllers
 {

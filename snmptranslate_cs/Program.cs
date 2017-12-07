@@ -1,9 +1,10 @@
 ﻿using System;
 using Lextm.SharpSnmpLib;
-using Lextm.SharpSnmpPro.Mib;
+using Lextm.SharpSnmpPro.Mib.Registry;
 using System.IO;
-using Parser = Lextm.SharpSnmpPro.Mib.Parser2;
+using Parser = Lextm.SharpSnmpPro.Mib.Registry.Parser2;
 using System.Reflection;
+using Lextm.SharpSnmpPro.Mib.Validation;
 
 namespace snmptranslate
 {
