@@ -1515,72 +1515,6 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         }
 
         [Test]
-        public void TestFullNameImport()
-        {
-            // IMPORTANT: SMIv2 forbids such imports.
-            var test = GetLocation("TestInvalidImport");
-            var builder = new StringBuilder("TEST-MIB DEFINITIONS ::= BEGIN")
-                .AppendLine()
-                .AppendLine("IMPORTS")
-                .AppendLine("    SNMPv2-SMI.MODULE-IDENTITY,")
-                .AppendLine("    enterprises")
-                .AppendLine("        FROM SNMPv2-SMI;")
-                .AppendLine()
-                .AppendLine("END");
-
-            File.WriteAllText(test, builder.ToString());
-            var collector = new ErrorRegistry();
-            new SimpleObjectRegistry { Tree = { Collector = collector } }
-                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
-                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
-                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
-                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
-                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
-                .Import(Parser.Compile(test, collector))
-                .Refresh();
-
-            Assert.AreEqual(0, collector.Errors.Count);
-#if !TRIAL
-            Assert.AreEqual(0, collector.Warnings.Count);
-#endif
-        }
-
-        [Test]
-        public void TestFullNameImportWrongModule()
-        {
-            // IMPORTANT: SMIv2 forbids such imports.
-            var test = GetLocation("TestInvalidImport1");
-            var builder = new StringBuilder("TEST-MIB DEFINITIONS ::= BEGIN")
-                .AppendLine()
-                .AppendLine("IMPORTS")
-                .AppendLine("    SNMPv2-SM.MODULE-IDENTITY,")
-                .AppendLine("    enterprises")
-                .AppendLine("        FROM SNMPv2-SMI;")
-                .AppendLine()
-                .AppendLine("END");
-
-            File.WriteAllText(test, builder.ToString());
-            var collector = new ErrorRegistry();
-            new SimpleObjectRegistry { Tree = { Collector = collector } }
-                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
-                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
-                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
-                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
-                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
-                .Import(Parser.Compile(test, collector))
-                .Refresh();
-
-            Assert.AreEqual(1, collector.Errors.Count);
-            foreach (var error in collector.Errors)
-            {
-                Assert.AreEqual(ErrorCategory.InvalidSymbolModule, error.Category);
-            }
-#if !TRIAL
-            Assert.AreEqual(0, collector.Warnings.Count);
-#endif
-        }
-
-        [Test]
         public void TestFullNameResolution()
         {
             // IMPORTANT: SMIv2 forbids such imports.
@@ -1612,9 +1546,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var builder3 = new StringBuilder("TEST3-MIB DEFINITIONS ::= BEGIN")
                 .AppendLine()
                 .AppendLine("IMPORTS")
-                .AppendLine("    TEST1-MIB.mytest")
+                .AppendLine("    mytest")
                 .AppendLine("        FROM TEST1-MIB")
-                .AppendLine("    TEST2-MIB.mytest")
+                .AppendLine("    mytest")
                 .AppendLine("        FROM TEST2-MIB;")
                 .AppendLine()
                 .AppendLine("mytest1 OBJECT IDENTIFIER ::= { TEST2-MIB.mytest 9999 }")
@@ -1679,9 +1613,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var builder3 = new StringBuilder("TEST3-MIB DEFINITIONS ::= BEGIN")
                 .AppendLine()
                 .AppendLine("IMPORTS")
-                .AppendLine("    TEST1-MIB.mytest")
+                .AppendLine("    mytest")
                 .AppendLine("        FROM TEST1-MIB")
-                .AppendLine("    TEST2-MIB.mytest")
+                .AppendLine("    mytest")
                 .AppendLine("        FROM TEST2-MIB;")
                 .AppendLine()
                 .AppendLine("mytest1 OBJECT IDENTIFIER ::= { TEST1-MIB.mytest 9999 }")
@@ -1745,9 +1679,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var builder3 = new StringBuilder("TEST3-MIB DEFINITIONS ::= BEGIN")
                 .AppendLine()
                 .AppendLine("IMPORTS")
-                .AppendLine("    TEST1-MIB.mytest")
+                .AppendLine("    mytest")
                 .AppendLine("        FROM TEST1-MIB")
-                .AppendLine("    TEST2-MIB.mytest")
+                .AppendLine("    mytest")
                 .AppendLine("        FROM TEST2-MIB;")
                 .AppendLine()
                 .AppendLine("mytest1 OBJECT IDENTIFIER ::= { mytest 9999 }")
