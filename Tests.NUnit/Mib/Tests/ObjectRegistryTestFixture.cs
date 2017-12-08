@@ -8,6 +8,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Lextm.SharpSnmpLib;
@@ -815,23 +816,21 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.IsFalse(registry.Verify("TEST-MIB", "testEntity13", new Integer32(8401000)));
         }
 
-        private static SimpleObjectRegistry LoadTestingDocuments()
+        private static ObjectRegistryBase LoadTestingDocuments()
         {
-            var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("Test.mib"), collector));
-            registry.Import(Parser.Compile(GetLocation("CISCO-SMI.mib"), collector));
-            registry.Import(Parser.Compile(GetLocation("CISCO-TC.mib"), collector));
-            registry.Refresh();
-            return registry;
+            return new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("Test.mib"), collector))
+                .Import(Parser.Compile(GetLocation("CISCO-SMI.mib"), collector))
+                .Import(Parser.Compile(GetLocation("CISCO-TC.mib"), collector))
+                .Refresh();
         }
 
         /// <summary>
@@ -864,12 +863,11 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestChoice()
         {
-            var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("RFC1155-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("Test1.mib"), collector));
-            registry.Refresh();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("RFC1155-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("Test1.mib"), collector))
+                .Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
             Assert.AreEqual(2, collector.Warnings.Count);
@@ -900,15 +898,15 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             var table = new ObjectIdentifier(new uint[] { 1, 3, 6, 1, 2, 1, 1, 9 });
             var entry = new ObjectIdentifier(new uint[] { 1, 3, 6, 1, 2, 1, 1, 9, 1 });
             var unknown = new ObjectIdentifier(new uint[] { 1, 3, 6, 8, 18579, 111111 });
-            var registry = new SimpleObjectRegistry();
+            
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Refresh();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Refresh();
             Assert.IsTrue(registry.ValidateTable(table));
             Assert.IsFalse(registry.ValidateTable(entry));
             Assert.IsFalse(registry.ValidateTable(unknown));
@@ -917,15 +915,14 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestGetTextualForms()
         {
-            var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Refresh();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
             Assert.AreEqual(0, collector.Warnings.Count);
@@ -954,15 +951,14 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestsysORTable()
         {
-            var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Refresh();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
             Assert.AreEqual(0, collector.Warnings.Count);
@@ -991,16 +987,14 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         {
             const string name = "ACTONA-ACTASTOR-MIB::actona";
             var collector = new ErrorRegistry();
-            var modules = Parser.Compile(GetLocation("ACTONA-ACTASTOR-MIB.mib"), collector);
-            var registry = new SimpleObjectRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Import(modules);
-            registry.Refresh();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Import(Parser.Compile(GetLocation("ACTONA-ACTASTOR-MIB.mib"), collector))
+                .Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
             Assert.AreEqual(0, collector.Warnings.Count);
@@ -1014,19 +1008,18 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestIEEE802dot11_MIB()
         {
-            var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("RFC-1212"), collector));
-            registry.Import(Parser.Compile(GetLocation("RFC1155-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("RFC1213-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IEEE802DOT11-MIB.mib"), collector));
-            registry.Refresh();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("RFC-1212"), collector))
+                .Import(Parser.Compile(GetLocation("RFC1155-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("RFC1213-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IEEE802DOT11-MIB.mib"), collector))
+                .Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
 #if !TRIAL
@@ -1045,19 +1038,18 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestJVM_MANAGEMENT_MIB()
         {
-            var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("RFC-1212"), collector));
-            registry.Import(Parser.Compile(GetLocation("RFC1155-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("RFC1213-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("JVM-MANAGEMENT-MIB.mib"), collector));
-            registry.Refresh();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("RFC-1212"), collector))
+                .Import(Parser.Compile(GetLocation("RFC1155-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("RFC1213-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Import(Parser.Compile(GetLocation("JVM-MANAGEMENT-MIB.mib"), collector))
+                .Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
 #if !TRIAL
@@ -1075,19 +1067,18 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestALLIEDTELESYN_MIB()
         {
-            var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("RFC-1212"), collector));
-            registry.Import(Parser.Compile(GetLocation("RFC1155-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("RFC1213-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("ALLIEDTELESYN-MIB.mib"), collector));
-            registry.Refresh();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("RFC-1212"), collector))
+                .Import(Parser.Compile(GetLocation("RFC1155-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("RFC1213-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Import(Parser.Compile(GetLocation("ALLIEDTELESYN-MIB.mib"), collector))
+                .Refresh();
 #if !TRIAL
             Assert.AreEqual(2, collector.Warnings.Count);
 #endif
@@ -1101,23 +1092,22 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestHOSTRESOURCES_MIB()
         {
-            var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("HOST-RESOURCES-MIB.txt"), collector));
-            registry.Refresh();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("HOST-RESOURCES-MIB.txt"), collector))
+                .Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
 #if !TRIAL
             Assert.AreEqual(0, collector.Warnings.Count);
 #endif
-            var module = registry.Tree.LoadedModules.FirstOrDefault(mod => mod.Name == "HOST-RESOURCES-MIB");
+            var module = registry.Tree.LoadedModules.First(mod => mod.Name == "HOST-RESOURCES-MIB");
             Assert.AreEqual(83, module.Objects.Count);
         }
 
@@ -1165,18 +1155,17 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestObjectIdentifierAssignments()
         {
-            var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IEEE8021-TC-MIB.txt"), collector));
-            registry.Refresh();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IEEE8021-TC-MIB.txt"), collector))
+                .Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
-            Assert.AreEqual(8, collector.Warnings.Count);
+            Assert.AreEqual(14, collector.Warnings.Count);
 
             var zero = registry.Translate(new uint[] { 0, 0 });
             Assert.AreEqual("SNMPv2-SMI::zeroDotZero", zero);
@@ -1199,30 +1188,24 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestFoundry()
         {
-            var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("HCNUM-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("FOUNDRY-SN-ROOT-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("FOUNDRY-SN-AGENT-MIB.txt"), collector));
-            registry.Refresh();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("HCNUM-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("FOUNDRY-SN-ROOT-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("FOUNDRY-SN-AGENT-MIB.txt"), collector))
+                .Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
 #if !TRIAL
             Assert.AreEqual(10, collector.Warnings.Count);
 #endif
-//            var error = collector.Errors.ElementAt(0);
-//#if !TRIAL
-//            Assert.AreEqual(ErrorCategory.MissingParentId, error.Category);
-//            Assert.AreEqual(5, collector.Warnings.Count); // for index type syntax.
-//#endif
         }
 
         // ReSharper restore InconsistentNaming
@@ -1249,16 +1232,15 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestImplied()
         {
-            var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMP-FRAMEWORK-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMP-TARGET-MIB.txt"), collector));
-            registry.Refresh();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMP-FRAMEWORK-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMP-TARGET-MIB.txt"), collector))
+                .Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
             Assert.AreEqual(0, collector.Warnings.Count);
@@ -1278,17 +1260,16 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestAugments()
         {
-            var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector));
-            registry.Refresh();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector))
+                .Refresh();
 
             var definition = registry.Tree.Find("IF-MIB", "ifXEntry");
             var type = definition.DisplayEntity as IObjectTypeMacro;
@@ -1306,15 +1287,14 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestDuplicateModule()
         {
-            var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("empty.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Refresh();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("empty.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Refresh();
 
             Assert.AreEqual(4, collector.Errors.Count);
             Assert.AreEqual(0, collector.Warnings.Count);
@@ -1328,38 +1308,36 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestInvalidDocument()
         {
-            var registry = new SimpleObjectRegistry();
-            var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
             var file = GetLocation("Invalid.txt");
-            registry.Import(Parser.Compile(file, collector));
-            registry.Refresh();
+            var collector = new ErrorRegistry();
+            new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(file, collector))
+                .Refresh();
             Assert.AreEqual(1, collector.Errors.Count);
 
             var item = collector.Errors.ElementAt(0);
-            //Assert.AreEqual(ErrorCategory.SematicError, item.Category);
+            Assert.AreEqual(ErrorCategory.SematicError, item.Category);
             Assert.AreEqual($"{file} (1,6) : error S0001 : Invalid token 'is'.", item.ToString());
         }
 
         [Test]
         public void TestDocsCableDeviceTrapMib()
         {
-            var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMP-FRAMEWORK-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("DOCS-IF-MIB.mib"), collector));
-            registry.Import(Parser.Compile(GetLocation("DOCS-IF-EXT-MIB.mib"), collector));
-            registry.Import(Parser.Compile(GetLocation("DOCS-CABLE-DEVICE-MIB.mib"), collector));
-            registry.Import(Parser.Compile(GetLocation("DOCS-CABLE-DEVICE-TRAP-MIB.mib"), collector));
-            registry.Refresh();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMP-FRAMEWORK-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("DOCS-IF-MIB.mib"), collector))
+                .Import(Parser.Compile(GetLocation("DOCS-IF-EXT-MIB.mib"), collector))
+                .Import(Parser.Compile(GetLocation("DOCS-CABLE-DEVICE-MIB.mib"), collector))
+                .Import(Parser.Compile(GetLocation("DOCS-CABLE-DEVICE-TRAP-MIB.mib"), collector))
+                .Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
 #if !TRIAL
@@ -1376,79 +1354,79 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestSonicWallFirewallTrapMibMib()
         {
-            var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SONICWALL-SMI.mib"), collector));
-            registry.Import(Parser.Compile(GetLocation("SONICWALL-FIREWALL-TRAP-MIB.mib"), collector));
-            registry.Refresh();
+            new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SONICWALL-SMI.mib"), collector))
+                .Import(Parser.Compile(GetLocation("SONICWALL-FIREWALL-TRAP-MIB.mib"), collector))
+                .Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
             Assert.AreEqual(1, collector.Warnings.Count);
+            var warning = collector.Warnings.First();
+            Assert.AreEqual(WarningCategory.ImplicitNodeCreation, warning.Category);
         }
 
         [Test]
         public void TestADSL()
         {
             var collector = new ErrorRegistry();
-            var registry = new SimpleObjectRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("PERFHIST-TC-MIB.mib"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMP-FRAMEWORK-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("ADSL-TC-MIB.mib"), collector));
-            registry.Refresh();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("PERFHIST-TC-MIB.mib"), collector))
+                .Import(Parser.Compile(GetLocation("SNMP-FRAMEWORK-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("ADSL-TC-MIB.mib"), collector))
+                .Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
 #if !TRIAL
             Assert.AreEqual(1, collector.Warnings.Count);
 #endif
-            //uint[] id = registry.Translate("ADSL-TC-MIB::adsltcmib");
-
-            //Assert.AreEqual(new uint[] { 1, 3, 6, 1, 4, 1, 17471 }, id);
-            //Assert.AreEqual("ADSL-TC-MIB::adsltcmib", registry.Translate(id));
+            uint[] id = registry.Translate("ADSL-TC-MIB::adsltcmib");
+            Assert.IsNull(id);
+            // IMPORTANT: The module is not pending, but its contents cannot be put on to the tree.
+            // Assert.AreEqual(new uint[] { 1, 3, 6, 1, 4, 1, 17471 }, id);
+            // Assert.AreEqual("ADSL-TC-MIB::adsltcmib", registry.Translate(id));
         }
 
         [Test]
         public void TestIEEE8023LAG_MIB()
         {
-            var registry = new SimpleObjectRegistry();
             var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("RFC-1212"), collector));
-            registry.Import(Parser.Compile(GetLocation("RFC1155-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("RFC1213-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("RFC1271-MIB.mib"), collector));
-            registry.Import(Parser.Compile(GetLocation("RFC-1215.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("PERFHIST-TC-MIB.mib"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMP-FRAMEWORK-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("RMON-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("TOKEN-RING-RMON-MIB.mib"), collector));
-            registry.Import(Parser.Compile(GetLocation("RMON2-MIB.mib"), collector));
-            registry.Import(Parser.Compile(GetLocation("BRIDGE-MIB.mib"), collector));
-            registry.Import(Parser.Compile(GetLocation("P-BRIDGE-MIB.mib"), collector));
-            registry.Import(Parser.Compile(GetLocation("Q-BRIDGE-MIB.mib"), collector));
-            registry.Import(Parser.Compile(GetLocation("IEEE8023-LAG-MIB.mib"), collector));
-            registry.Refresh();
+            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("RFC-1212"), collector))
+                .Import(Parser.Compile(GetLocation("RFC1155-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("RFC1213-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("RFC1271-MIB.mib"), collector))
+                .Import(Parser.Compile(GetLocation("RFC-1215.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("PERFHIST-TC-MIB.mib"), collector))
+                .Import(Parser.Compile(GetLocation("SNMP-FRAMEWORK-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("RMON-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("TOKEN-RING-RMON-MIB.mib"), collector))
+                .Import(Parser.Compile(GetLocation("RMON2-MIB.mib"), collector))
+                .Import(Parser.Compile(GetLocation("BRIDGE-MIB.mib"), collector))
+                .Import(Parser.Compile(GetLocation("P-BRIDGE-MIB.mib"), collector))
+                .Import(Parser.Compile(GetLocation("Q-BRIDGE-MIB.mib"), collector))
+                .Import(Parser.Compile(GetLocation("IEEE8023-LAG-MIB.mib"), collector))
+                .Refresh();
 
             Assert.AreEqual(0, collector.Errors.Count);
 #if !TRIAL
@@ -1470,7 +1448,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         public void TestCisco()
         {
             var collector = new ErrorRegistry();
-            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+            new SimpleObjectRegistry {Tree = {Collector = collector}}
                 .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
                 .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
                 .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
@@ -1489,10 +1467,315 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 #if !TRIAL
             Assert.AreEqual(2, collector.Warnings.Count);
 #endif
-            //foreach (var warning in collector.Warnings)
-            //{
-            //    Assert.AreEqual(WarningCategory.WrongIndexType, warning.Category);
-            //}
+            foreach (var warning in collector.Warnings)
+            {
+                Assert.AreEqual(WarningCategory.WrongIndexType, warning.Category);
+            }
+        }
+        
+        [Test]
+        public void TestInvalidImport()
+        {
+            // IMPORTANT: SMIv2 forbids such imports.
+            var test = GetLocation("TestInvalidImport");
+            var builder = new StringBuilder("TEST-MIB DEFINITIONS ::= BEGIN")
+                .AppendLine()
+                .AppendLine("IMPORTS")
+                .AppendLine("    MODULE-IDENTITY,")
+                .AppendLine("    BITS,")
+                .AppendLine("    INTEGER,")
+                .AppendLine("    OCTET STRING,")
+                .AppendLine("    OBJECT IDENTIFIER,")
+                .AppendLine("    SEQUENCE,")
+                .AppendLine("    SEQUENCE OF TEXT,")
+                .AppendLine("    enterprises")
+                .AppendLine("        FROM SNMPv2-SMI;")
+                .AppendLine()
+                .AppendLine("END");
+
+            File.WriteAllText(test, builder.ToString());
+            var collector = new ErrorRegistry();
+            new SimpleObjectRegistry {Tree = {Collector = collector}}
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Import(Parser.Compile(test, collector))
+                .Refresh();
+
+            Assert.AreEqual(6, collector.Errors.Count);
+            foreach (var error in collector.Errors)
+            {
+                Assert.AreEqual(ErrorCategory.ForbiddenImportedSymbol, error.Category);
+            }
+#if !TRIAL
+            Assert.AreEqual(0, collector.Warnings.Count);
+#endif
+        }
+
+        [Test]
+        public void TestFullNameImport()
+        {
+            // IMPORTANT: SMIv2 forbids such imports.
+            var test = GetLocation("TestInvalidImport");
+            var builder = new StringBuilder("TEST-MIB DEFINITIONS ::= BEGIN")
+                .AppendLine()
+                .AppendLine("IMPORTS")
+                .AppendLine("    SNMPv2-SMI.MODULE-IDENTITY,")
+                .AppendLine("    enterprises")
+                .AppendLine("        FROM SNMPv2-SMI;")
+                .AppendLine()
+                .AppendLine("END");
+
+            File.WriteAllText(test, builder.ToString());
+            var collector = new ErrorRegistry();
+            new SimpleObjectRegistry { Tree = { Collector = collector } }
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Import(Parser.Compile(test, collector))
+                .Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+#if !TRIAL
+            Assert.AreEqual(0, collector.Warnings.Count);
+#endif
+        }
+
+        [Test]
+        public void TestFullNameImportWrongModule()
+        {
+            // IMPORTANT: SMIv2 forbids such imports.
+            var test = GetLocation("TestInvalidImport1");
+            var builder = new StringBuilder("TEST-MIB DEFINITIONS ::= BEGIN")
+                .AppendLine()
+                .AppendLine("IMPORTS")
+                .AppendLine("    SNMPv2-SM.MODULE-IDENTITY,")
+                .AppendLine("    enterprises")
+                .AppendLine("        FROM SNMPv2-SMI;")
+                .AppendLine()
+                .AppendLine("END");
+
+            File.WriteAllText(test, builder.ToString());
+            var collector = new ErrorRegistry();
+            new SimpleObjectRegistry { Tree = { Collector = collector } }
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Import(Parser.Compile(test, collector))
+                .Refresh();
+
+            Assert.AreEqual(1, collector.Errors.Count);
+            foreach (var error in collector.Errors)
+            {
+                Assert.AreEqual(ErrorCategory.InvalidSymbolModule, error.Category);
+            }
+#if !TRIAL
+            Assert.AreEqual(0, collector.Warnings.Count);
+#endif
+        }
+
+        [Test]
+        public void TestFullNameResolution()
+        {
+            // IMPORTANT: SMIv2 forbids such imports.
+            var test = GetLocation("Import1");
+            var builder = new StringBuilder("TEST1-MIB DEFINITIONS ::= BEGIN")
+                .AppendLine()
+                .AppendLine("IMPORTS")
+                .AppendLine("    enterprises")
+                .AppendLine("        FROM SNMPv2-SMI;")
+                .AppendLine()
+                .AppendLine("mytest OBJECT IDENTIFIER ::= { enterprises 9998 }")
+                .AppendLine()
+                .AppendLine("END");
+            File.WriteAllText(test, builder.ToString());
+
+            var test2 = GetLocation("Import2");
+            var builder2 = new StringBuilder("TEST2-MIB DEFINITIONS ::= BEGIN")
+                .AppendLine()
+                .AppendLine("IMPORTS")
+                .AppendLine("    enterprises")
+                .AppendLine("        FROM SNMPv2-SMI;")
+                .AppendLine()
+                .AppendLine("mytest OBJECT IDENTIFIER ::= { enterprises 9999 }")
+                .AppendLine()
+                .AppendLine("END");
+            File.WriteAllText(test2, builder2.ToString());
+
+            var test3 = GetLocation("Import3");
+            var builder3 = new StringBuilder("TEST3-MIB DEFINITIONS ::= BEGIN")
+                .AppendLine()
+                .AppendLine("IMPORTS")
+                .AppendLine("    TEST1-MIB.mytest")
+                .AppendLine("        FROM TEST1-MIB")
+                .AppendLine("    TEST2-MIB.mytest")
+                .AppendLine("        FROM TEST2-MIB;")
+                .AppendLine()
+                .AppendLine("mytest1 OBJECT IDENTIFIER ::= { TEST2-MIB.mytest 9999 }")
+                .AppendLine()
+                .AppendLine("END");
+            File.WriteAllText(test3, builder3.ToString());
+
+            var collector = new ErrorRegistry();
+            var registry = new SimpleObjectRegistry { Tree = { Collector = collector } }
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Import(Parser.Compile(test, collector))
+                .Import(Parser.Compile(test2, collector))
+                .Import(Parser.Compile(test3, collector))
+                .Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+
+#if !TRIAL
+            Assert.AreEqual(0, collector.Warnings.Count);
+#endif
+            {
+                //Assert.AreEqual("TEST3-MIB::mytest1", registry.Translate(new uint[] { 1, 2, 840, 10006 }));
+                uint[] id = registry.Translate("TEST3-MIB::mytest1");
+                Assert.AreEqual(new uint[] { 1, 3, 6, 1, 4, 1, 9999, 9999 }, id);
+            }
+        }
+
+
+        [Test]
+        public void TestFullNameResolution2()
+        {
+            // IMPORTANT: SMIv2 forbids such imports.
+            var test = GetLocation("Import21");
+            var builder = new StringBuilder("TEST1-MIB DEFINITIONS ::= BEGIN")
+                .AppendLine()
+                .AppendLine("IMPORTS")
+                .AppendLine("    enterprises")
+                .AppendLine("        FROM SNMPv2-SMI;")
+                .AppendLine()
+                .AppendLine("mytest OBJECT IDENTIFIER ::= { enterprises 9998 }")
+                .AppendLine()
+                .AppendLine("END");
+            File.WriteAllText(test, builder.ToString());
+
+            var test2 = GetLocation("Import22");
+            var builder2 = new StringBuilder("TEST2-MIB DEFINITIONS ::= BEGIN")
+                .AppendLine()
+                .AppendLine("IMPORTS")
+                .AppendLine("    enterprises")
+                .AppendLine("        FROM SNMPv2-SMI;")
+                .AppendLine()
+                .AppendLine("mytest OBJECT IDENTIFIER ::= { enterprises 9999 }")
+                .AppendLine()
+                .AppendLine("END");
+            File.WriteAllText(test2, builder2.ToString());
+
+            var test3 = GetLocation("Import23");
+            var builder3 = new StringBuilder("TEST3-MIB DEFINITIONS ::= BEGIN")
+                .AppendLine()
+                .AppendLine("IMPORTS")
+                .AppendLine("    TEST1-MIB.mytest")
+                .AppendLine("        FROM TEST1-MIB")
+                .AppendLine("    TEST2-MIB.mytest")
+                .AppendLine("        FROM TEST2-MIB;")
+                .AppendLine()
+                .AppendLine("mytest1 OBJECT IDENTIFIER ::= { TEST1-MIB.mytest 9999 }")
+                .AppendLine()
+                .AppendLine("END");
+            File.WriteAllText(test3, builder3.ToString());
+
+            var collector = new ErrorRegistry();
+            var registry = new SimpleObjectRegistry { Tree = { Collector = collector } }
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Import(Parser.Compile(test, collector))
+                .Import(Parser.Compile(test2, collector))
+                .Import(Parser.Compile(test3, collector))
+                .Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+
+#if !TRIAL
+            Assert.AreEqual(0, collector.Warnings.Count);
+#endif
+            {
+                //Assert.AreEqual("TEST3-MIB::mytest1", registry.Translate(new uint[] { 1, 2, 840, 10006 }));
+                uint[] id = registry.Translate("TEST3-MIB::mytest1");
+                Assert.AreEqual(new uint[] { 1, 3, 6, 1, 4, 1, 9998, 9999 }, id);
+            }
+        }
+
+        [Test]
+        public void TestFullNameResolutionFailed()
+        {
+            // IMPORTANT: SMIv2 forbids such imports.
+            var test = GetLocation("Import11");
+            var builder = new StringBuilder("TEST1-MIB DEFINITIONS ::= BEGIN")
+                .AppendLine()
+                .AppendLine("IMPORTS")
+                .AppendLine("    enterprises")
+                .AppendLine("        FROM SNMPv2-SMI;")
+                .AppendLine()
+                .AppendLine("mytest OBJECT IDENTIFIER ::= { enterprises 9998 }")
+                .AppendLine()
+                .AppendLine("END");
+            File.WriteAllText(test, builder.ToString());
+
+            var test2 = GetLocation("Import12");
+            var builder2 = new StringBuilder("TEST2-MIB DEFINITIONS ::= BEGIN")
+                .AppendLine()
+                .AppendLine("IMPORTS")
+                .AppendLine("    enterprises")
+                .AppendLine("        FROM SNMPv2-SMI;")
+                .AppendLine()
+                .AppendLine("mytest OBJECT IDENTIFIER ::= { enterprises 9999 }")
+                .AppendLine()
+                .AppendLine("END");
+            File.WriteAllText(test2, builder2.ToString());
+
+            var test3 = GetLocation("Import13");
+            var builder3 = new StringBuilder("TEST3-MIB DEFINITIONS ::= BEGIN")
+                .AppendLine()
+                .AppendLine("IMPORTS")
+                .AppendLine("    TEST1-MIB.mytest")
+                .AppendLine("        FROM TEST1-MIB")
+                .AppendLine("    TEST2-MIB.mytest")
+                .AppendLine("        FROM TEST2-MIB;")
+                .AppendLine()
+                .AppendLine("mytest1 OBJECT IDENTIFIER ::= { mytest 9999 }")
+                .AppendLine()
+                .AppendLine("END");
+            File.WriteAllText(test3, builder3.ToString());
+
+            var collector = new ErrorRegistry();
+            var registry = new SimpleObjectRegistry { Tree = { Collector = collector } }
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Import(Parser.Compile(test, collector))
+                .Import(Parser.Compile(test2, collector))
+                .Import(Parser.Compile(test3, collector))
+                .Refresh();
+
+            Assert.AreEqual(1, collector.Errors.Count);
+            foreach (var error in collector.Errors)
+            {
+                Assert.AreEqual(ErrorCategory.DescriptorCollision, error.Category);
+            }
+
+#if !TRIAL
+            Assert.AreEqual(0, collector.Warnings.Count);
+#endif
         }
 
         // ReSharper restore InconsistentNaming
