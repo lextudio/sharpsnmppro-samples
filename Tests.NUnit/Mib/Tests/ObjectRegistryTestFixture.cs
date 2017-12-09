@@ -156,6 +156,8 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.IsTrue(registry.Verify("SNMPv2-MIB", "sysDescr", new OctetString("test")));
             Assert.IsTrue(registry.Verify("SNMPv2-MIB", "sysDescr", new OctetString(string.Empty)));
             Assert.IsFalse(registry.Verify("SNMPv2-MIB", "sysDescr", new OctetString(Get257Chars())));
+
+            Assert.Throws<InvalidOperationException>(() => registry.Verify(new ObjectIdentifier("1.3.1.6.1.1.2.1.0"), new OctetString("test")));
 #endif
         }
 
@@ -206,6 +208,8 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 
             // IMPORTANT: decode the input data to a suitable format.
             Assert.AreEqual("down(2)", registry.Decode("IF-MIB", "ifAdminStatus", new Integer32(2)));
+
+            Assert.Throws<InvalidOperationException>(() => registry.Decode(new ObjectIdentifier("1.2.3"), new Integer32(2)));
         }
 
         /// <summary>
@@ -1480,7 +1484,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestInvalidImport()
         {
-            // IMPORTANT: SMIv2 forbids such imports.
+            // IMPORTANT: SMIv2 forbids such imports. RFC2578 3.2.
             var test = GetLocation("TestInvalidImport");
             var builder = new StringBuilder("TEST-MIB DEFINITIONS ::= BEGIN")
                 .AppendLine()
@@ -1521,7 +1525,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestFullNameResolution()
         {
-            // IMPORTANT: SMIv2 forbids such imports.
+            // IMPORTANT: RFC2578 3.2.
             var test = GetLocation("Import1");
             var builder = new StringBuilder("TEST1-MIB DEFINITIONS ::= BEGIN")
                 .AppendLine()
@@ -1587,7 +1591,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestFullNameResolution2()
         {
-            // IMPORTANT: SMIv2 forbids such imports.
+            // IMPORTANT: RFC2578 3.2.
             var test = GetLocation("Import21");
             var builder = new StringBuilder("TEST1-MIB DEFINITIONS ::= BEGIN")
                 .AppendLine()
@@ -1652,7 +1656,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         [Test]
         public void TestFullNameResolutionFailed()
         {
-            // IMPORTANT: SMIv2 forbids such imports.
+            // IMPORTANT: RFC2578 3.2.
             var test = GetLocation("Import11");
             var builder = new StringBuilder("TEST1-MIB DEFINITIONS ::= BEGIN")
                 .AppendLine()
