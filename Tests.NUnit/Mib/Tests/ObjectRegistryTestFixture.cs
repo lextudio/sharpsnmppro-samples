@@ -8,7 +8,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Lextm.SharpSnmpLib;
@@ -22,7 +21,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
     using Registry;
     using Validation;
     using Parser = Registry.Parser2;
-        
+
     [TestFixture]
     public class ObjectRegistryTestFixture
     {
@@ -926,26 +925,27 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 
             Assert.AreEqual(0, collector.Errors.Count);
             Assert.AreEqual(0, collector.Warnings.Count);
+            const string iso = ".iso";
+            Assert.AreEqual(iso, registry.Translate(new uint[] { 1 }));
+            Assert.AreEqual(new uint[] { 1 }, registry.Translate(iso));
+            const string transmission = "SNMPv2-SMI.transmission";
+            Assert.AreEqual(transmission, registry.Translate(new uint[] { 1, 3, 6, 1, 2, 1, 10 }));
+            Assert.AreEqual(new uint[] { 1, 3, 6, 1, 2, 1, 10 }, registry.Translate(transmission));
 
-            Assert.AreEqual("::iso", registry.Translate(new uint[] { 1 }));
-            Assert.AreEqual(new uint[] { 1 }, registry.Translate("::iso"));
+            Assert.AreEqual("SNMPv2-MIB.system", registry.Translate(new uint[] { 1, 3, 6, 1, 2, 1, 1 }));
+            const string domain = "SNMPv2-TM.snmpUDPDomain";
+            Assert.AreEqual(domain, registry.Translate(ObjectIdentifier.AppendTo(registry.Translate("SNMPv2-SMI.snmpDomains"), 1)));
+            Assert.AreEqual(new uint[] { 1, 3, 6, 1, 6, 1, 1 }, registry.Translate(domain));
 
-            Assert.AreEqual("SNMPv2-SMI::transmission", registry.Translate(new uint[] { 1, 3, 6, 1, 2, 1, 10 }));
-            Assert.AreEqual(new uint[] { 1, 3, 6, 1, 2, 1, 10 }, registry.Translate("SNMPv2-SMI::transmission"));
-
-            Assert.AreEqual("SNMPv2-MIB::system", registry.Translate(new uint[] { 1, 3, 6, 1, 2, 1, 1 }));
-
-            Assert.AreEqual("SNMPv2-TM::snmpUDPDomain", registry.Translate(ObjectIdentifier.AppendTo(registry.Translate("SNMPv2-SMI::snmpDomains"), 1)));
-            Assert.AreEqual(new uint[] { 1, 3, 6, 1, 6, 1, 1 }, registry.Translate("SNMPv2-TM::snmpUDPDomain"));
-
-            Assert.AreEqual(new uint[] { 0 }, registry.Translate("::ccitt"));
-            Assert.AreEqual("SNMPv2-SMI::zeroDotZero", registry.Translate(new uint[] { 0, 0 }));
-            Assert.AreEqual(new uint[] { 0, 0 }, registry.Translate("SNMPv2-SMI::zeroDotZero"));
+            Assert.AreEqual(new uint[] { 0 }, registry.Translate(".ccitt"));
+            const string zero = "SNMPv2-SMI.zeroDotZero";
+            Assert.AreEqual(zero, registry.Translate(new uint[] { 0, 0 }));
+            Assert.AreEqual(new uint[] { 0, 0 }, registry.Translate(zero));
 
             var item = registry.Tree.Find("SNMPv2-SMI", "zeroDotZero");
             Assert.AreEqual(new uint[] { 0, 0 }, item.DisplayEntity.GetObjectIdentifier());
 
-            Assert.AreEqual(new uint[] { 1, 3, 6, 1, 2, 1, 1 }, registry.Translate("SNMPv2-MIB::system"));
+            Assert.AreEqual(new uint[] { 1, 3, 6, 1, 2, 1, 1 }, registry.Translate("SNMPv2-MIB.system"));
         }
 
         [Test]
@@ -963,7 +963,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual(0, collector.Errors.Count);
             Assert.AreEqual(0, collector.Warnings.Count);
 
-            uint[] id = registry.Translate("SNMPv2-MIB::sysORTable");
+            uint[] id = registry.Translate("SNMPv2-MIB.sysORTable");
 #if !TRIAL
             Assert.IsTrue(registry.ValidateTable(new ObjectIdentifier(id)));
 #endif
@@ -974,18 +974,18 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual(DefinitionType.Entry, node1.Type);
             Assert.AreEqual(DefinitionType.Column, node2.Type);
 
-            Assert.AreEqual(new uint[] { 1, 3, 6, 1, 2, 1, 1, 9, 0 }, registry.Translate("SNMPv2-MIB::sysORTable.0"));
-            Assert.AreEqual("SNMPv2-MIB::sysORTable.0", registry.Translate(new uint[] { 1, 3, 6, 1, 2, 1, 1, 9, 0 }));
+            Assert.AreEqual(new uint[] { 1, 3, 6, 1, 2, 1, 1, 9, 0 }, registry.Translate("SNMPv2-MIB.sysORTable.0"));
+            Assert.AreEqual("SNMPv2-MIB.sysORTable.0", registry.Translate(new uint[] { 1, 3, 6, 1, 2, 1, 1, 9, 0 }));
 
 #if !TRIAL
-            Assert.IsFalse(registry.ValidateTable(new ObjectIdentifier(registry.Translate("SNMPv2-MIB::snmpMIB"))));
+            Assert.IsFalse(registry.ValidateTable(new ObjectIdentifier(registry.Translate("SNMPv2-MIB.snmpMIB"))));
 #endif
         }
 
         [Test]
         public void TestActona()
         {
-            const string name = "ACTONA-ACTASTOR-MIB::actona";
+            const string name = "ACTONA-ACTASTOR-MIB.actona";
             var collector = new ErrorRegistry();
             var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
                 .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
@@ -1002,7 +1002,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             uint[] id = registry.Translate(name);
 
             Assert.AreEqual(new uint[] { 1, 3, 6, 1, 4, 1, 17471 }, id);
-            Assert.AreEqual("ACTONA-ACTASTOR-MIB::actona", registry.Translate(id));
+            Assert.AreEqual(name, registry.Translate(id));
         }
 
         [Test]
@@ -1025,11 +1025,12 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 #if !TRIAL
             Assert.AreEqual(3, collector.Warnings.Count);
 #endif
-            Assert.AreEqual("IEEE802dot11-MIB::dot11SMTnotification", registry.Translate(new uint[] { 1, 2, 840, 10036, 1, 6 }));
-            uint[] id = registry.Translate("IEEE802dot11-MIB::dot11SMTnotification");
+            const string notification = "IEEE802dot11-MIB.dot11SMTnotification";
+            Assert.AreEqual(notification, registry.Translate(new uint[] { 1, 2, 840, 10036, 1, 6 }));
+            uint[] id = registry.Translate(notification);
             Assert.AreEqual(new uint[] { 1, 2, 840, 10036, 1, 6 }, id);
 
-            const string name1 = "IEEE802dot11-MIB::dot11Disassociate";
+            const string name1 = "IEEE802dot11-MIB.dot11Disassociate";
             var id1 = new uint[] { 1, 2, 840, 10036, 1, 6, 0, 1 };
             Assert.AreEqual(id1, registry.Translate(name1));
             Assert.AreEqual(name1, registry.Translate(id1));
@@ -1055,8 +1056,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 #if !TRIAL
             Assert.AreEqual(4, collector.Warnings.Count);
 #endif
-            Assert.AreEqual("JVM-MANAGEMENT-MIB::jmgt", registry.Translate(new uint[] { 1, 3, 6, 1, 4, 1, 42, 2, 145 }));
-            uint[] id = registry.Translate("JVM-MANAGEMENT-MIB::jmgt");
+            const string jmgt = "JVM-MANAGEMENT-MIB.jmgt";
+            Assert.AreEqual(jmgt, registry.Translate(new uint[] { 1, 3, 6, 1, 4, 1, 42, 2, 145 }));
+            uint[] id = registry.Translate(jmgt);
             Assert.AreEqual(new uint[] { 1, 3, 6, 1, 4, 1, 42, 2, 145 }, id);
 
             var item = registry.Tree.Find("JVM-MANAGEMENT-MIB", "jmgt");
@@ -1168,13 +1170,13 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual(14, collector.Warnings.Count);
 
             var zero = registry.Translate(new uint[] { 0, 0 });
-            Assert.AreEqual("SNMPv2-SMI::zeroDotZero", zero);
+            Assert.AreEqual("SNMPv2-SMI.zeroDotZero", zero);
 
             var module = registry.Tree.LoadedModules.FirstOrDefault(mod => mod.Name == "IEEE8021-TC-MIB");
             Assert.AreEqual(0, module.Objects.Count);
-            var child = registry.Translate("IEEE8021-TC-MIB::ieee8021TcMib");
+            var child = registry.Translate("IEEE8021-TC-MIB.ieee8021TcMib");
             Assert.AreEqual("1.3.111.2.802.1.1.1", ObjectIdentifier.Convert(child));
-            var parent = registry.Translate("IEEE8021-TC-MIB::ieee802dot1mibs");
+            var parent = registry.Translate("IEEE8021-TC-MIB.ieee802dot1mibs");
             Assert.AreEqual("1.3.111.2.802.1.1", ObjectIdentifier.Convert(parent));
 
             // IMPORTANT: assistant OIDs were utilized in 1.1.1 and older releases to support such scenarios. They are no longer required in 1.1.2 and above.
@@ -1344,7 +1346,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual(2, collector.Warnings.Count);
 #endif
             var definition = registry.Tree.Find("DOCS-CABLE-DEVICE-TRAP-MIB", "docsDevCmInitTLVUnknownTrap");
-            Assert.AreEqual("DOCS-CABLE-DEVICE-TRAP-MIB::docsDevCmInitTLVUnknownTrap", registry.Translate(definition.GetNumericalForm()));
+            Assert.AreEqual("DOCS-CABLE-DEVICE-TRAP-MIB.docsDevCmInitTLVUnknownTrap", registry.Translate(definition.GetNumericalForm()));
 #if !TRIAL
             var type = definition.DisplayEntity as NotificationTypeMacro;
             Assert.IsNotNull(type);
@@ -1392,7 +1394,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 #if !TRIAL
             Assert.AreEqual(1, collector.Warnings.Count);
 #endif
-            uint[] id = registry.Translate("ADSL-TC-MIB::adsltcmib");
+            uint[] id = registry.Translate("ADSL-TC-MIB.adsltcmib");
             Assert.IsNull(id);
             // IMPORTANT: The module is not pending, but its contents cannot be put on to the tree.
             // Assert.AreEqual(new uint[] { 1, 3, 6, 1, 4, 1, 17471 }, id);
@@ -1433,13 +1435,15 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.AreEqual(26, collector.Warnings.Count);
 #endif
             {
-                Assert.AreEqual("IEEE8023-LAG-MIB::lagMIB", registry.Translate(new uint[] { 1, 2, 840, 10006, 300, 43 }));
-                uint[] id = registry.Translate("IEEE8023-LAG-MIB::lagMIB");
+                const string lag = "IEEE8023-LAG-MIB.lagMIB";
+                Assert.AreEqual(lag, registry.Translate(new uint[] { 1, 2, 840, 10006, 300, 43 }));
+                uint[] id = registry.Translate(lag);
                 Assert.AreEqual(new uint[] { 1, 2, 840, 10006, 300, 43 }, id);
             }
             {
-                Assert.AreEqual("IEEE8023-LAG-MIB::802dot3", registry.Translate(new uint[] { 1, 2, 840, 10006 }));
-                uint[] id = registry.Translate("IEEE8023-LAG-MIB::802dot3");
+                const string dot = "IEEE8023-LAG-MIB.802dot3";
+                Assert.AreEqual(dot, registry.Translate(new uint[] { 1, 2, 840, 10006 }));
+                uint[] id = registry.Translate(dot);
                 Assert.AreEqual(new uint[] { 1, 2, 840, 10006 }, id);
             }
         }
@@ -1575,7 +1579,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 #endif
             {
                 //Assert.AreEqual("TEST3-MIB::mytest1", registry.Translate(new uint[] { 1, 2, 840, 10006 }));
-                uint[] id = registry.Translate("TEST3-MIB::mytest1");
+                uint[] id = registry.Translate("TEST3-MIB.mytest1");
                 Assert.AreEqual(new uint[] { 1, 3, 6, 1, 4, 1, 9999, 9999 }, id);
             }
         }
@@ -1642,7 +1646,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 #endif
             {
                 //Assert.AreEqual("TEST3-MIB::mytest1", registry.Translate(new uint[] { 1, 2, 840, 10006 }));
-                uint[] id = registry.Translate("TEST3-MIB::mytest1");
+                uint[] id = registry.Translate("TEST3-MIB.mytest1");
                 Assert.AreEqual(new uint[] { 1, 3, 6, 1, 4, 1, 9998, 9999 }, id);
             }
         }
