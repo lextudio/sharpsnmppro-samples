@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2003
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "snmptranslate.Full", "snmptranslate_cs\snmptranslate.Full.csproj", "{6475E834-1869-4713-9A67-C808B349A1D6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "snmptranslate", "snmptranslate_cs\snmptranslate.csproj", "{6475E834-1869-4713-9A67-C808B349A1D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Full", "Tests.NUnit\Tests.Full.csproj", "{591452A6-2EAA-48B8-A314-1B05BA49AF54}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests.NUnit\Tests.csproj", "{591452A6-2EAA-48B8-A314-1B05BA49AF54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +24,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {05B7B362-56D0-459F-9F1F-7DEC144B2262}
 	EndGlobalSection
 EndGlobal
