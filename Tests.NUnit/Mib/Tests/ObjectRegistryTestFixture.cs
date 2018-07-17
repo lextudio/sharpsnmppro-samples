@@ -1067,6 +1067,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 
             var item = registry.Tree.Find("JVM-MANAGEMENT-MIB", "jmgt");
             Assert.AreEqual(new uint[] { 1, 3, 6, 1, 4, 1, 42, 2, 145 }, item.DisplayEntity.GetObjectIdentifier());
+            Assert.AreEqual(string.Empty, item.DisplayEntity.DescriptionFormatted());
         }
 
 
