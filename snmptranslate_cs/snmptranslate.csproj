@@ -94,6 +94,11 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Lextm.SharpSnmpLib">
+      <Version>10.0.3</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="SharpSnmpPro.Mib.Trial">
       <Version>2.0.0</Version>
     </PackageReference>
