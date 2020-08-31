@@ -1,3 +1,4 @@
+dir
 md .nuget
 cd .nuget
 call nuget update /self
