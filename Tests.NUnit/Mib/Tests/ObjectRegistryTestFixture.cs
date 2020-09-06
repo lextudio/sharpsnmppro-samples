@@ -18,7 +18,9 @@ using System.Reflection;
 #pragma warning disable 1591
 namespace Lextm.SharpSnmpPro.Mib.Tests
 {
+    using Lextm.SharpSnmpLib.Messaging;
     using Registry;
+    using System.Collections.Generic;
     using Validation;
     using Parser = Registry.Parser2;
 
@@ -1479,6 +1481,67 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             {
                 Assert.AreEqual(WarningCategory.WrongIndexType, warning.Category);
             }
+        }
+
+        [Test]
+        public void TestCiscoISDN()
+        {
+            var collector = new ErrorRegistry();
+            var registry = new SimpleObjectRegistry { Tree = { Collector = collector } }
+                .Import(Parser.Compile(GetLocation("RFC1155-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("RFC-1212"), collector))
+                .Import(Parser.Compile(GetLocation("RFC1213-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("CISCO-SMI.mib"), collector))
+                .Import(Parser.Compile(GetLocation("ISDN-MIB.mib"), collector))
+                .Import(Parser.Compile(GetLocation("CISCO-ISDN-MIB.mib"), collector))
+                .Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+#if !TRIAL
+            Assert.AreEqual(2, collector.Warnings.Count);
+
+            foreach (var warning in collector.Warnings)
+            {
+                Assert.AreEqual(WarningCategory.ImplicitNodeCreation, warning.Category);
+            }
+#endif
+
+            var trap = registry.Tree.Find("CISCO-ISDN-MIB", "demandNbrLayer2Change").DisplayEntity;
+            var message = new TrapV2Message(
+                5001,
+                VersionCode.V2,
+                new OctetString("public"),
+                new ObjectIdentifier(trap.GetObjectIdentifier()),
+                500,
+                new List<Variable>
+                {
+                    new Variable(new ObjectIdentifier(registry.Translate("RFC1213-MIB::ifIndex")), new Integer32(2)),
+                    new Variable(new ObjectIdentifier(registry.Translate("ISDN-MIB::isdnLapdOperStatus")), new Integer32(3))
+                });
+
+            Assert.AreEqual("CISCO-ISDN-MIB::demandNbrLayer2Change", registry.Translate(message.Enterprise.ToNumerical()));
+            Assert.AreEqual("RFC1213-MIB::ifIndex", registry.Translate(message.Variables()[0].Id.ToNumerical()));
+            Assert.AreEqual("ISDN-MIB::isdnLapdOperStatus", registry.Translate(message.Variables()[1].Id.ToNumerical()));
+#if !TRIAL
+            var status = (ObjectTypeMacro)registry.Tree.Find("ISDN-MIB", "isdnLapdOperStatus").DisplayEntity;
+            var syntax = (IntegerType)status.ResolvedSyntax;
+            var nameList = syntax.NamedNumberList;
+            foreach (NamedNumber namedNumber in nameList)
+            {
+                if (((NumberLiteralValue)namedNumber.Value).Value == ((Integer32)message.Variables()[1].Data).ToInt32())
+                {
+                    Assert.AreEqual("l2Active", namedNumber.Name);
+                }
+            }
+#endif
         }
         
         [Test]
