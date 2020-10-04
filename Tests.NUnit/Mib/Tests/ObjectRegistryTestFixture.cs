@@ -1206,6 +1206,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
                 .Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector))
                 .Import(Parser.Compile(GetLocation("DLSW-MIB.my"), collector))
                 .Import(Parser.Compile(GetLocation("SNA-SDLC-MIB.mib"), collector))
+                .Import(Parser.Compile(GetLocation("RFC-1212"), collector))
                 .Import(Parser.Compile(GetLocation("RFC1155-SMI.txt"), collector))
                 .Import(Parser.Compile(GetLocation("RFC1213-MIB.txt"), collector))
                 .Import(Parser.Compile(GetLocation("RFC1271-MIB.mib"), collector))
@@ -1213,11 +1214,10 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 
             Assert.AreEqual(0, collector.Errors.Count);
 #if !TRIAL
-            Assert.AreEqual(10, collector.Warnings.Count);
+            Assert.AreEqual(2, collector.Warnings.Count);
 #endif
             var definition = registry.Tree.Find("DLSW-MIB", "null");
-            var type = definition.DisplayEntity as IObjectTypeMacro;
-            Assert.IsNotNull(type);
+            Assert.AreEqual("zeroDotZero", definition.DisplayEntity.Name);
         }
 
         [Test]
