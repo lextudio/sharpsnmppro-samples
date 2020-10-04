@@ -1194,6 +1194,33 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         }
 
         [Test]
+        public void TestDLSW()
+        {
+            var collector = new ErrorRegistry();
+            var registry = new SimpleObjectRegistry { Tree = { Collector = collector } }
+                .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
+                .Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("DLSW-MIB.my"), collector))
+                .Import(Parser.Compile(GetLocation("SNA-SDLC-MIB.mib"), collector))
+                .Import(Parser.Compile(GetLocation("RFC1155-SMI.txt"), collector))
+                .Import(Parser.Compile(GetLocation("RFC1213-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("RFC1271-MIB.mib"), collector))
+                .Refresh();
+
+            Assert.AreEqual(0, collector.Errors.Count);
+#if !TRIAL
+            Assert.AreEqual(10, collector.Warnings.Count);
+#endif
+            var definition = registry.Tree.Find("DLSW-MIB", "null");
+            var type = definition.DisplayEntity as IObjectTypeMacro;
+            Assert.IsNotNull(type);
+        }
+
+        [Test]
         public void TestFoundry()
         {
             var collector = new ErrorRegistry();
