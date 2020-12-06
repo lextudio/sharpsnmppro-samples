@@ -1570,7 +1570,24 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             }
 #endif
         }
-        
+
+        [Test]
+        public void TestPendingDocuments()
+        {
+            var collector = new ErrorRegistry();
+            var registry = new SimpleObjectRegistry { Tree = { Collector = collector } }
+                .Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector))
+                .Import(Parser.Compile(GetLocation("CISCO-SMI.mib"), collector))
+                .Import(Parser.Compile(GetLocation("ISDN-MIB.mib"), collector))
+                .Import(Parser.Compile(GetLocation("CISCO-ISDN-MIB.mib"), collector))
+                .Refresh();
+
+            Assert.Greater(collector.Errors.Count, 0);
+            Assert.AreEqual(6, registry.Tree.PendingModules.Count);
+        }
+
         [Test]
         public void TestInvalidImport()
         {
