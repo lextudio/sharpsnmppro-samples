@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2003
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31402.337
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "snmptranslate", "snmptranslate_cs\snmptranslate.csproj", "{6475E834-1869-4713-9A67-C808B349A1D6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests.NUnit\Tests.csproj", "{591452A6-2EAA-48B8-A314-1B05BA49AF54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "snmpwalk", "snmpwalk_cs\snmpwalk.csproj", "{C201D903-8292-41DA-A18B-E817F1C5BCFB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{591452A6-2EAA-48B8-A314-1B05BA49AF54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{591452A6-2EAA-48B8-A314-1B05BA49AF54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{591452A6-2EAA-48B8-A314-1B05BA49AF54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C201D903-8292-41DA-A18B-E817F1C5BCFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C201D903-8292-41DA-A18B-E817F1C5BCFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C201D903-8292-41DA-A18B-E817F1C5BCFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C201D903-8292-41DA-A18B-E817F1C5BCFB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
