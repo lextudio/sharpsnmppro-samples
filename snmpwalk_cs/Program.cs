@@ -246,7 +246,7 @@ namespace snmpwalk
 #else
                     if (o.Definition.Type == DefinitionType.Scalar || o.Definition.Type == DefinitionType.Column)
                     {
-                        var data = registry.Decode(new ObjectIdentifier(o.Definition.GetNumericalForm()), variable.Data);
+                        var data = registry.Decode(o.Definition.GetNumericalForm(), variable.Data);
                         Console.WriteLine($"Variable: Id: {o.Text}; Data: {data}");
                     }
                     else

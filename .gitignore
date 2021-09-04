@@ -41,3 +41,4 @@ T4MVC.cs
 /.vs
 /local
 /*.nupkg
+SharpSnmpPro.Mib.deps.json
