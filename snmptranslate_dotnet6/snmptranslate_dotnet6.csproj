@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\snmptranslate_cs\Program.cs" Link="Program.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\Tests.NUnit\Resources\SNMPv2-CONF.txt" Link="Resources\SNMPv2-CONF.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Tests.NUnit\Resources\SNMPv2-MIB.txt" Link="Resources\SNMPv2-MIB.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Tests.NUnit\Resources\SNMPv2-SMI.txt" Link="Resources\SNMPv2-SMI.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Tests.NUnit\Resources\SNMPv2-TC.txt" Link="Resources\SNMPv2-TC.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Tests.NUnit\Resources\SNMPv2-TM.txt" Link="Resources\SNMPv2-TM.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Tests.NUnit\Resources\SNMPV2-PDU.mib" Link="Resources\SNMPV2-PDU.mib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\snmptranslate_cs\sharpsnmppro.txt" Link="sharpsnmppro.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SharpSnmpPro.Mib" Version="2.1.2" />
+  </ItemGroup>
+
+</Project>

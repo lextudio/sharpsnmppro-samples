@@ -172,8 +172,7 @@ namespace snmpwalk
                 return;
             }
 
-            IPAddress ip;
-            bool parsed = IPAddress.TryParse(extra[0], out ip);
+            bool parsed = IPAddress.TryParse(extra[0], out IPAddress ip);
             if (!parsed)
             {
                 var addresses = Dns.GetHostAddressesAsync(extra[0]);
