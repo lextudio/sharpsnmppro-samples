@@ -1090,11 +1090,11 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 #if !TRIAL
             Assert.AreEqual(2, collector.Warnings.Count);
 #endif
+            Assert.AreEqual(1, collector.Errors.Count);
             var o = registry.Tree.Search(ObjectIdentifier.Convert("3.6.1.2.1.25"));
             Assert.IsNull(o.Definition);
             Assert.AreEqual(".3.6.1.2.1.25", o.AlternativeText);
             Assert.AreEqual(".3.6.1.2.1.25", o.Text);
-            Assert.AreEqual(1, collector.Errors.Count);
         }
 
         [Test]
@@ -1584,6 +1584,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
                 .Import(Parser.Compile(GetLocation("CISCO-ISDN-MIB.mib"), collector))
                 .Refresh();
 
+            // IMPORTANT: Verify the collected errors and see why MIB documents are pending.
             Assert.Greater(collector.Errors.Count, 0);
             Assert.AreEqual(6, registry.Tree.PendingModules.Count);
         }
