@@ -1076,7 +1076,10 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         public void TestALLIEDTELESYN_MIB()
         {
             var collector = new ErrorRegistry();
-            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+            var registry = new SimpleObjectRegistry
+            {
+                Tree = { Collector = collector, PendingModulesAllowed = true }
+            }
                 .Import(Parser.Compile(GetLocation("RFC-1212"), collector))
                 .Import(Parser.Compile(GetLocation("RFC1155-SMI.txt"), collector))
                 .Import(Parser.Compile(GetLocation("RFC1213-MIB.txt"), collector))
@@ -1323,7 +1326,10 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         public void TestDuplicateModule()
         {
             var collector = new ErrorRegistry();
-            var registry = new SimpleObjectRegistry {Tree = {Collector = collector}}
+            var registry = new SimpleObjectRegistry
+            {
+                Tree = { Collector = collector, PendingModulesAllowed = true }
+            }
                 .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
                 .Import(Parser.Compile(GetLocation("empty.txt"), collector))
                 .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
@@ -1575,7 +1581,14 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
         public void TestPendingDocuments()
         {
             var collector = new ErrorRegistry();
-            var registry = new SimpleObjectRegistry { Tree = { Collector = collector } }
+            var registry = new SimpleObjectRegistry
+            {
+                Tree =
+                {
+                    Collector = collector,
+                    PendingModulesAllowed = true
+                }
+            }
                 .Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector))
                 .Import(Parser.Compile(GetLocation("INET-ADDRESS-MIB.txt"), collector))
                 .Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector))
@@ -1611,7 +1624,8 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 
             File.WriteAllText(test, builder.ToString());
             var collector = new ErrorRegistry();
-            new SimpleObjectRegistry {Tree = {Collector = collector}}
+            new SimpleObjectRegistry {
+                Tree = {Collector = collector, PendingModulesAllowed = true }}
                 .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
                 .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
                 .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
@@ -1673,7 +1687,10 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             File.WriteAllText(test3, builder3.ToString());
 
             var collector = new ErrorRegistry();
-            var registry = new SimpleObjectRegistry { Tree = { Collector = collector } }
+            var registry = new SimpleObjectRegistry
+            {
+                Tree = { Collector = collector, PendingModulesAllowed = true }
+            }
                 .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
                 .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
                 .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
@@ -1804,7 +1821,10 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             File.WriteAllText(test3, builder3.ToString());
 
             var collector = new ErrorRegistry();
-            var registry = new SimpleObjectRegistry { Tree = { Collector = collector } }
+            var registry = new SimpleObjectRegistry
+            {
+                Tree = { Collector = collector, PendingModulesAllowed = true }
+            }
                 .Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector))
                 .Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector))
                 .Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector))
