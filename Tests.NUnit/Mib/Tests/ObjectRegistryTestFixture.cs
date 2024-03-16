@@ -1098,6 +1098,8 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.IsNull(o.Definition);
             Assert.AreEqual(".3.6.1.2.1.25", o.AlternativeText);
             Assert.AreEqual(".3.6.1.2.1.25", o.Text);
+            Assert.AreEqual(1, collector.Errors.Count);
+            Assert.AreEqual(ErrorCategory.MissingDependency, collector.Errors.ElementAt(0).Category);
         }
 
         [Test]
@@ -1471,7 +1473,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 
             Assert.AreEqual(0, collector.Errors.Count);
 #if !TRIAL
-            Assert.AreEqual(26, collector.Warnings.Count);
+            Assert.AreEqual(27, collector.Warnings.Count);
 #endif
             {
                 const string lag = "IEEE8023-LAG-MIB::lagMIB";
