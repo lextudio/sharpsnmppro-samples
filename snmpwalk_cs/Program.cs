@@ -25,29 +25,8 @@ namespace snmpwalk
 {
     public static class Program
     {
-        private static string GetLocation(string file)
-        {
-            return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Resources", file);
-        }
-
         public static void Main(string[] args)
         {
-            // load MIB documents.
-            var registry = new SimpleObjectRegistry();
-            var collector = new ErrorRegistry();
-            registry.Tree.Collector = collector;
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-SMI.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-CONF.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TC.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("SNMPv2-TM.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IANAifType-MIB.txt"), collector));
-            registry.Import(Parser.Compile(GetLocation("IF-MIB.txt"), collector));
-            registry.Refresh();
-            var tree = registry.Tree;
-
-
-
             // perform MIB assisted WALK operation.
             string community = "public";
             bool showHelp = false;
@@ -64,6 +43,7 @@ namespace snmpwalk
             string privacy = string.Empty;
             string privPhrase = string.Empty;
             WalkMode mode = WalkMode.WithinSubtree;
+            List<string> directories = new List<string>();
             bool dump = false;
 
             OptionSet p = new OptionSet()
@@ -132,8 +112,12 @@ namespace snmpwalk
                     }
                     else
                     {
-                        throw new ArgumentException("unknown argument: " + v);
+                        throw new ArgumentException("unknown WALK mode: " + v);
                     }
+                })
+                .Add("M:", "Specifies a semi-colon separated list of directories to search for MIBs.", delegate (string v)
+                {
+                    directories.AddRange(v.Split(';'));
                 })
                 .Add("Cr:", "Max-repetitions (default is 10)", delegate (string v) { maxRepetitions = int.Parse(v); });
 
@@ -168,14 +152,27 @@ namespace snmpwalk
 
             if (showVersion)
             {
-                Console.WriteLine(Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyVersionAttribute>().Version);
+                Console.WriteLine(Assembly.GetEntryAssembly()!.GetCustomAttribute<AssemblyVersionAttribute>()!.Version);
                 return;
             }
 
-            bool parsed = IPAddress.TryParse(extra[0], out IPAddress ip);
+            var endpoint = extra[0];
+            int port = 161;
+            var portSeparator = endpoint.LastIndexOf(':');
+            var host = portSeparator > 0 ? endpoint.Substring(0, portSeparator) : endpoint;
+            if (portSeparator > 0)
+            {
+                if (!int.TryParse(endpoint.Substring(portSeparator + 1), out port))
+                {
+                    Console.WriteLine("invalid port number: " + endpoint.Substring(portSeparator + 1));
+                    return;
+                }
+            }
+
+            bool parsed = IPAddress.TryParse(host, out IPAddress? ip);
             if (!parsed)
             {
-                var addresses = Dns.GetHostAddressesAsync(extra[0]);
+                var addresses = Dns.GetHostAddressesAsync(host);
                 addresses.Wait();
                 foreach (IPAddress address in
                     addresses.Result.Where(address => address.AddressFamily == AddressFamily.InterNetwork))
@@ -183,19 +180,19 @@ namespace snmpwalk
                     ip = address;
                     break;
                 }
+            }
 
-                if (ip == null)
-                {
-                    Console.WriteLine("invalid host or wrong IP address found: " + extra[0]);
-                    return;
-                }
+            if (ip == null)
+            {
+                Console.WriteLine("invalid host or wrong IP address found: " + host);
+                return;
             }
 
             try
             {
                 ObjectIdentifier test = extra.Count == 1 ? new ObjectIdentifier("1.3.6.1.2.1") : new ObjectIdentifier(extra[1]);
                 IList<Variable> result = new List<Variable>();
-                IPEndPoint receiver = new IPEndPoint(ip, 161);
+                IPEndPoint receiver = new IPEndPoint(ip, port);
                 if (version == VersionCode.V1)
                 {
                     Messenger.Walk(version, receiver, new OctetString(community), test, result, timeout, mode);
@@ -237,6 +234,27 @@ namespace snmpwalk
                     ReportMessage report = discovery.GetResponse(timeout, receiver);
                     Messenger.BulkWalk(version, receiver, new OctetString(user), new OctetString(string.IsNullOrWhiteSpace(contextName) ? string.Empty : contextName), test, result, timeout, maxRepetitions, mode, priv, report);
                 }
+
+                if (directories.Count == 0)
+                {
+                    directories.Add(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Resources"));
+                }
+
+                // load MIB documents.
+                var registry = new SimpleObjectRegistry();
+                var collector = new ErrorRegistry();
+                registry.Tree.Collector = collector;
+                foreach (string directory in directories)
+                {
+                    foreach (string file in Directory.GetFiles(directory, "*"))
+                    {
+                        registry.Import(Parser.Compile(file, collector));
+                    }
+                }
+
+                registry.Refresh();
+                var tree = registry.Tree;
+                DecoderRegistry.Register(new InetAddressDecoder());
 
                 foreach (Variable variable in result)
                 {
@@ -287,6 +305,28 @@ namespace snmpwalk
             Console.WriteLine("snmpwalk [Options] IP-address|host-name [OID]");
             Console.WriteLine("Options:");
             optionSet.WriteOptionDescriptions(Console.Out);
+        }
+    }
+
+    internal sealed class InetAddressDecoder : IDecoder
+    {
+        public string Key => "INET-ADDRESS-MIB::InetAddress";
+
+        public string Decode(ISnmpData data)
+        {
+            if (data.TypeCode != SnmpType.OctetString)
+            {
+                throw new InvalidOperationException("Invalid data type.");
+            }
+
+            var octet = (OctetString)data;
+            var raw = octet.GetRaw();
+            if (raw.Length == 4 || raw.Length == 16)
+            {
+                return new IPAddress(raw).ToString();
+            }
+
+            throw new InvalidOperationException("Invalid data length.");
         }
     }
 }
