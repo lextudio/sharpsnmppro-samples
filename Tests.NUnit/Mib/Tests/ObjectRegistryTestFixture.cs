@@ -1491,6 +1491,16 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
                 uint[] id = registry.Translate(dot);
                 Assert.That(id, Is.EqualTo(new uint[] { 1, 2, 840, 10006 }));
             }
+
+            {
+                var module = registry.Tree.LoadedModules.First(mod => mod.Name == "BRIDGE-MIB");
+                Assert.That(module.Entities.Count(_ => _ is TrapTypeMacro), Is.EqualTo(2));
+
+                const string trap1 = "BRIDGE-MIB::newRoot";
+                Assert.That(registry.Translate(new uint[] { 1, 3, 6, 1, 2, 1, 17, 0, 1 }), Is.EqualTo(trap1));
+                var item = registry.Tree.Find("BRIDGE-MIB", "newRoot");
+                Assert.That(item.DisplayEntity is TrapTypeMacro);
+            }
         }
 
         [Test]
