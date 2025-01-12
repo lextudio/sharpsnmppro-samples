@@ -264,13 +264,19 @@ namespace snmpwalk
 #else
                     if (o.Definition.Type == DefinitionType.Scalar || o.Definition.Type == DefinitionType.Column)
                     {
+                        if (variable.Data.TypeCode == SnmpType.ObjectIdentifier)
+                        {
+                            var resolved = tree.Search(((ObjectIdentifier)variable.Data).ToNumerical());
+                            Console.WriteLine($"Variable: Id: {o.Text}; Data: {resolved.Text}");
+                            continue;
+                        }
+
                         var data = registry.Decode(o.Definition.GetNumericalForm(), variable.Data);
                         Console.WriteLine($"Variable: Id: {o.Text}; Data: {data}");
+                        continue;
                     }
-                    else
-                    {
-                        Console.WriteLine($"Variable: Id: {o.Text}; Data: {variable.Data}");
-                    }
+
+                    Console.WriteLine($"Variable: Id: {o.Text}; Data: {variable.Data}");
 #endif
                 }
             }
