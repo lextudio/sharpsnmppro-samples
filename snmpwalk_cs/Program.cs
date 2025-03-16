@@ -307,26 +307,4 @@ namespace snmpwalk
             optionSet.WriteOptionDescriptions(Console.Out);
         }
     }
-
-    internal sealed class InetAddressDecoder : IDecoder
-    {
-        public string Key => "INET-ADDRESS-MIB::InetAddress";
-
-        public string Decode(ISnmpData data)
-        {
-            if (data.TypeCode != SnmpType.OctetString)
-            {
-                throw new InvalidOperationException("Invalid data type.");
-            }
-
-            var octet = (OctetString)data;
-            var raw = octet.GetRaw();
-            if (raw.Length == 4 || raw.Length == 16)
-            {
-                return new IPAddress(raw).ToString();
-            }
-
-            throw new InvalidOperationException("Invalid data length.");
-        }
-    }
 }

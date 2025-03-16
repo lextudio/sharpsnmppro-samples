@@ -487,6 +487,22 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.That(registry.Decode("TEST-MIB", "testEntity5", new OctetString(new byte[] { 0x07, 0xC8, 5, 26, 13, 30, 15, 0x00, 0x2D, 0x04, 0x00 })), Is.EqualTo("1992-05-26T13:30:15.0000000-04:00"));
         }
 
+        [Test]
+        public void TestInetAddress()
+        {
+            var registry = LoadTestingDocuments();
+
+            // DateAndTime
+            Assert.That(registry.Verify("TEST-MIB", "testEntity14", new OctetString(new byte[] { 0x9, 0x9, 0x9, 0x9})), Is.True);
+            Assert.That(registry.Verify("TEST-MIB", "testEntity14", new OctetString(new byte[] { 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9, 0x9 })), Is.True);
+            Assert.Throws<InvalidOperationException>(() => registry.Decode("TEST-MIB", "testEntity5", new OctetString(new byte[] { 0x9, 0x9, })));
+            Assert.That(registry.Verify("TEST-MIB", "testEntity5", new OctetString(new byte[] { 0x9 })), Is.False);
+
+            Assert.That(registry.Decode("TEST-MIB", "testEntity5", new OctetString(new byte[] { 0x07, 0xD4, 0x08, 0x11})), Is.EqualTo("2004-08-17T15:48:00.0000000-05:00"));
+            Assert.That(registry.Decode("TEST-MIB", "testEntity5", new OctetString(new byte[] { 0x07, 0xD4, 0x08, 0x11, 0x0F, 0x30, 0x00, 0x00 })), Is.EqualTo("2004-08-17T15:48:00.0000000+00:00"));
+            Assert.That(registry.Decode("TEST-MIB", "testEntity5", new OctetString(new byte[] { 0x07, 0xC8, 5, 26, 13, 30, 15, 0x00, 0x2D, 0x04, 0x00 })), Is.EqualTo("1992-05-26T13:30:15.0000000-04:00"));
+        }
+
         /// <summary>
         /// A test case for StorageType.
         /// </summary>

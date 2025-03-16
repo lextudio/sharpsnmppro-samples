@@ -17,7 +17,9 @@ IMPORTS
     CountryCodeITU,
     CiscoRowOperStatus,
     CiscoPort
-        FROM CISCO-TC;
+        FROM CISCO-TC
+    InetAddress
+        FROM INET-ADDRESS-MIB;
 
 test MODULE-IDENTITY
     LAST-UPDATED "200001110000Z"
@@ -211,6 +213,17 @@ testEntity13 OBJECT-TYPE
             the system's hardware type, software operating-system,
             and networking software."
     ::= { test 13 }
+
+testEntity14 OBJECT-TYPE
+    SYNTAX InetAddress
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "A textual description of the entity.  This value should
+            include the full name and version identification of
+            the system's hardware type, software operating-system,
+            and networking software."
+    ::= { test 14 }
 
 testTrap TRAP-TYPE
     ENTERPRISE mytest
