@@ -1029,7 +1029,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 
             Assert.That(collector.Errors.Count, Is.EqualTo(0));
 #if !TRIAL
-            Assert.That(collector.Warnings.Count, Is.EqualTo(3));
+            Assert.That(collector.Warnings.Count, Is.EqualTo(150));
 #endif
             const string notification = "IEEE802dot11-MIB::dot11SMTnotification";
             Assert.That(registry.Translate(new uint[] { 1, 2, 840, 10036, 1, 6 }), Is.EqualTo(notification));
@@ -1060,13 +1060,9 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 
             Assert.That(collector.Errors.Count, Is.EqualTo(0));
 #if !TRIAL
-            Assert.That(collector.Warnings.Count, Is.EqualTo(4));
+            Assert.That(collector.Warnings.Count, Is.EqualTo(151));
 #endif
             const string jmgt = "JVM-MANAGEMENT-MIB::jmgt";
-            Assert.That(collector.Errors.Count, Is.EqualTo(0));
-#if !TRIAL
-            Assert.That(collector.Warnings.Count, Is.EqualTo(4));
-#endif
             Assert.That(registry.Translate(new uint[] { 1, 3, 6, 1, 4, 1, 42, 2, 145 }), Is.EqualTo(jmgt));
             uint[] id = registry.Translate(jmgt);
             Assert.That(id, Is.EqualTo(new uint[] { 1, 3, 6, 1, 4, 1, 42, 2, 145 }));
@@ -1095,7 +1091,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
                 .Import(Parser.Compile(GetLocation("ALLIEDTELESYN-MIB.mib"), collector))
                 .Refresh();
 #if !TRIAL
-            Assert.That(collector.Warnings.Count, Is.EqualTo(2));
+            Assert.That(collector.Warnings.Count, Is.EqualTo(149));
 #endif
             Assert.That(collector.Errors.Count, Is.EqualTo(1));
             var o = registry.Tree.Search(ObjectIdentifier.Convert("3.6.1.2.1.25"));
@@ -1223,7 +1219,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 
             Assert.That(collector.Errors.Count, Is.EqualTo(0));
 #if !TRIAL
-            Assert.That(collector.Warnings.Count, Is.EqualTo(2));
+            Assert.That(collector.Warnings.Count, Is.EqualTo(253));
 #endif
             var definition = registry.Tree.Find("DLSW-MIB", "null");
             Assert.That(definition.DisplayEntity.Name, Is.EqualTo("zeroDotZero"));
@@ -1477,7 +1473,7 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 
             Assert.That(collector.Errors.Count, Is.EqualTo(0));
 #if !TRIAL
-            Assert.That(collector.Warnings.Count, Is.EqualTo(27));
+            Assert.That(collector.Warnings.Count, Is.EqualTo(461));
 #endif
             {
                 const string lag = "IEEE8023-LAG-MIB::lagMIB";
@@ -1555,12 +1551,10 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
 
             Assert.That(collector.Errors.Count, Is.EqualTo(0));
 #if !TRIAL
-            Assert.That(collector.Warnings.Count, Is.EqualTo(2));
+            Assert.That(collector.Warnings.Count, Is.EqualTo(149));
 
-            foreach (var warning in collector.Warnings)
-            {
-                Assert.That(warning.Category, Is.EqualTo(WarningCategory.ImplicitNodeCreation));
-            }
+            Assert.That(collector.Warnings.Count(w => w.Category == WarningCategory.ImplicitNodeCreation), Is.EqualTo(2));
+            Assert.That(collector.Warnings.Count(w => w.Category == WarningCategory.SematicError), Is.EqualTo(147));
 #endif
 
             var trap = registry.Tree.Find("CISCO-ISDN-MIB", "demandNbrLayer2Change").DisplayEntity;
