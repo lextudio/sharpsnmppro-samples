@@ -94,9 +94,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SharpSnmpPro.Mib.Trial">
-      <Version>2.1.4</Version>
-    </PackageReference>
+    <PackageReference Include="SharpSnmpPro.Mib.Trial" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

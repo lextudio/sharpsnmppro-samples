@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="snmptranslate_dotnet/snmptranslate_dotnet.csproj" />
+  <Project Path="snmpwalk_dotnet/snmpwalk_dotnet.csproj" />
+  <Project Path="Tests.NUnit/Tests.csproj" />
+</Solution>

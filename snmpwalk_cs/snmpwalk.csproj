@@ -95,12 +95,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Mono.Options">
-      <Version>6.12.0.148</Version>
-    </PackageReference>
-    <PackageReference Include="SharpSnmpPro.Mib.Trial">
-      <Version>2.1.4</Version>
-    </PackageReference>
+    <PackageReference Include="Mono.Options" />
+    <PackageReference Include="SharpSnmpPro.Mib.Trial" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

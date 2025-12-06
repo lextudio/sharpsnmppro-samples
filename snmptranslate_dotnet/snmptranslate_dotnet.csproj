@@ -38,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SharpSnmpPro.Mib.Trial" Version="2.1.4" />
+    <PackageReference Include="SharpSnmpPro.Mib.Trial" />
   </ItemGroup>
 
 </Project>
