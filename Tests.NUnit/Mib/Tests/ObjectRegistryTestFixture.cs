@@ -821,6 +821,250 @@ namespace Lextm.SharpSnmpPro.Mib.Tests
             Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(8401000)), Is.False);
         }
 
+        /// <summary>
+        /// Test case for analyzing constraint structure of INTEGER with disjoint value ranges.
+        /// Covers: ValueRangeConstraintElement, multiple disjoint ranges, union constraints.
+        /// </summary>
+        /// <remarks>
+        /// testEntity13 OBJECT-TYPE
+        ///     SYNTAX      INTEGER (30000000..31000000 | 13750000..14500000 | 5850000..6425000 | 7900000..8400000)
+        ///     MAX-ACCESS  read-only
+        ///     STATUS      current
+        /// 
+        /// This is a classic example of a constraint with multiple disjoint value ranges (union).
+        /// </remarks>
+#if !TRIAL
+        [Test]
+        public void TestConstraintStructure_IntegerRanges()
+        {
+            var registry = LoadTestingDocuments();
+
+            var item = registry.Tree.Find("TEST-MIB", "testEntity13");
+            var entity = item.DisplayEntity as IObjectTypeMacro;
+            Assert.That(entity, Is.Not.Null);
+
+            // IMPORTANT: Verify constraint structure for disjoint ranges
+            var syntax = entity.ResolvedSyntax as ConstraintedType;
+            Assert.That(syntax, Is.Not.Null);
+            Assert.That(syntax.Constraint, Is.Not.Null);
+
+            var elementSetSpecs = syntax.Constraint.ElementSetSpecs;
+            Assert.That(elementSetSpecs, Is.Not.Null);
+
+            // The constraint should have elements linked through a chain
+            var leftElement = elementSetSpecs.LeftElement;
+            Assert.That(leftElement, Is.Not.Null);
+            Assert.That(leftElement.Element, Is.TypeOf<ValueRangeConstraintElement>());
+
+            // Test that first range is 30000000..31000000
+            var firstRange = leftElement.Element as ValueRangeConstraintElement;
+            Assert.That(firstRange.ValueRange.MinValue.ToString(), Is.EqualTo("30000000"));
+            Assert.That(firstRange.ValueRange.MaxValue.ToString(), Is.EqualTo("31000000"));
+#endif
+        }
+
+        /// <summary>
+        /// Test case for boundary verification of INTEGER constraints with multiple ranges.
+        /// Covers: Range boundaries, valid/invalid values, boundary edge cases.
+        /// </summary>
+#if !TRIAL
+        [Test]
+        public void TestConstraintBoundaryVerification_IntegerRanges()
+        {
+            var registry = LoadTestingDocuments();
+
+            // Test first range: 30000000..31000000
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(30000000)), Is.True, "Min of range 1 should pass");
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(31000000)), Is.True, "Max of range 1 should pass");
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(30500000)), Is.True, "Mid of range 1 should pass");
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(29999999)), Is.False, "Below range 1 should fail");
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(31000001)), Is.False, "Above range 1 should fail");
+
+            // Test second range: 13750000..14500000
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(13750000)), Is.True, "Min of range 2 should pass");
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(14500000)), Is.True, "Max of range 2 should pass");
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(14000000)), Is.True, "Mid of range 2 should pass");
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(13749999)), Is.False, "Below range 2 should fail");
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(14500001)), Is.False, "Above range 2 should fail");
+
+            // Test third range: 5850000..6425000
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(5850000)), Is.True, "Min of range 3 should pass");
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(6425000)), Is.True, "Max of range 3 should pass");
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(6100000)), Is.True, "Mid of range 3 should pass");
+
+            // Test fourth range: 7900000..8400000
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(7900000)), Is.True, "Min of range 4 should pass");
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(8400000)), Is.True, "Max of range 4 should pass");
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(8150000)), Is.True, "Mid of range 4 should pass");
+
+            // Test gaps between ranges
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(6425001)), Is.False, "Gap between range 3 and 4 should fail");
+            Assert.That(registry.Verify("TEST-MIB", "testEntity13", new Integer32(7899999)), Is.False, "Gap between range 3 and 4 should fail");
+#endif
+        }
+
+        /// <summary>
+        /// Test case for SIZE constraint verification on OCTET STRING types.
+        /// Covers: SizeConstraintElement, size boundary testing, zero/empty sizes.
+        /// </summary>
+#if !TRIAL
+        [Test]
+        public void TestConstraintVerification_SizeConstraints()
+        {
+            var registry = LoadTestingDocuments();
+
+            // DisplayString has SIZE (0..255) constraint
+            var zeroByteString = new OctetString(string.Empty);
+            var maxValidString = new OctetString(new string('a', 255));
+            var tooLongString = new OctetString(new string('a', 256));
+
+            Assert.That(registry.Verify("SNMPv2-MIB", "sysDescr", zeroByteString), Is.True, "Empty string (size 0) should pass SIZE (0..255)");
+            Assert.That(registry.Verify("SNMPv2-MIB", "sysDescr", maxValidString), Is.True, "String of size 255 should pass SIZE (0..255)");
+            Assert.That(registry.Verify("SNMPv2-MIB", "sysDescr", tooLongString), Is.False, "String of size 256 should fail SIZE (0..255)");
+
+            // Test intermediate sizes
+            var mediumString = new OctetString(new string('a', 128));
+            Assert.That(registry.Verify("SNMPv2-MIB", "sysDescr", mediumString), Is.True, "String of size 128 should pass SIZE (0..255)");
+#endif
+        }
+
+        /// <summary>
+        /// Test case for examining constraint element types in the constraint hierarchy.
+        /// Covers: Constraint traversal, ElementSetRange structure, constraint chaining.
+        /// </summary>
+#if !TRIAL
+        [Test]
+        public void TestConstraintElementTypes_DisplayString()
+        {
+            var registry = LoadTestingDocuments();
+
+            var item = registry.Tree.Find("SNMPv2-MIB", "sysDescr");
+            var entity = item.DisplayEntity as IObjectTypeMacro;
+            Assert.That(entity, Is.Not.Null);
+
+            // sysDescr is ConstraintedType with SIZE constraint
+            var constrainted = entity.ResolvedSyntax as ConstraintedType;
+            Assert.That(constrainted, Is.Not.Null);
+            Assert.That(constrainted.Constraint, Is.Not.Null);
+
+            // Navigate the constraint structure
+            var elementSetSpecs = constrainted.Constraint.ElementSetSpecs;
+            Assert.That(elementSetSpecs, Is.Not.Null);
+
+            var leftElement = elementSetSpecs.LeftElement;
+            Assert.That(leftElement, Is.Not.Null);
+
+            // The top-level element should be a SizeConstraintElement
+            var sizeConstraint = leftElement.Element as SizeConstraintElement;
+            Assert.That(sizeConstraint, Is.Not.Null, "Expected SizeConstraintElement for DisplayString");
+            Assert.That(sizeConstraint.Constraint, Is.Not.Null, "Size constraint should have inner constraint");
+
+            // The inner constraint should have ValueRangeConstraintElement
+            var innerSpecs = sizeConstraint.Constraint.ElementSetSpecs;
+            Assert.That(innerSpecs, Is.Not.Null);
+            var rangeElement = innerSpecs.LeftElement.Element as ValueRangeConstraintElement;
+            Assert.That(rangeElement, Is.Not.Null, "Expected ValueRangeConstraintElement for SIZE range");
+
+            // Verify the range values
+            Assert.That(rangeElement.ValueRange.MinValue.ToString(), Is.EqualTo("0"));
+            Assert.That(rangeElement.ValueRange.MaxValue.ToString(), Is.EqualTo("255"));
+#endif
+        }
+
+        /// <summary>
+        /// Test case for constraint verification across type assignments and textual conventions.
+        /// Covers: Multi-level type resolution, constraint inheritance, base type constraints.
+        /// </summary>
+#if !TRIAL
+        [Test]
+        public void TestConstraintPropagation_TextualConvention()
+        {
+            var registry = LoadTestingDocuments();
+
+            var item = registry.Tree.Find("SNMPv2-MIB", "sysDescr");
+            var entity = item.DisplayEntity as IObjectTypeMacro;
+
+            // Get the constraint from object type  
+            var objConstrainted = entity.ResolvedSyntax as ConstraintedType;
+            Assert.That(objConstrainted, Is.Not.Null);
+
+            // Follow the chain to the TypeAssignment (DisplayString)
+            var assignment = objConstrainted.BaseType as TypeAssignment;
+            Assert.That(assignment, Is.Not.Null);
+
+            // Get the TextualConventionMacro
+            var textual = assignment.BaseType as TextualConventionMacro;
+            Assert.That(textual, Is.Not.Null);
+
+            // The textual convention also has a constraint
+            var tcConstrainted = textual.BaseType as ConstraintedType;
+            Assert.That(tcConstrainted, Is.Not.Null);
+            Assert.That(tcConstrainted.Constraint, Is.Not.Null);
+
+            // Both should have compatible constraints (both SIZE 0..255)
+            var objSize = objConstrainted.Constraint.ElementSetSpecs.LeftElement.Element as SizeConstraintElement;
+            var tcSize = tcConstrainted.Constraint.ElementSetSpecs.LeftElement.Element as SizeConstraintElement;
+            
+            Assert.That(objSize, Is.Not.Null);
+            Assert.That(tcSize, Is.Not.Null);
+
+            // Both constraints should be for size 0..255
+            var objRange = objSize.Constraint.ElementSetSpecs.LeftElement.Element as ValueRangeConstraintElement;
+            var tcRange = tcSize.Constraint.ElementSetSpecs.LeftElement.Element as ValueRangeConstraintElement;
+
+            Assert.That(objRange.ValueRange.MinValue.ToString(), Is.EqualTo(tcRange.ValueRange.MinValue.ToString()));
+            Assert.That(objRange.ValueRange.MaxValue.ToString(), Is.EqualTo(tcRange.ValueRange.MaxValue.ToString()));
+#endif
+        }
+
+        /// <summary>
+        /// Test case for named number constraints (enumerated integers).
+        /// Covers: NamedNumber, named value constraints, enumeration boundaries.
+        /// </summary>
+#if !TRIAL
+        [Test]
+        public void TestConstraintVerification_NamedNumbers()
+        {
+            var registry = LoadTestingDocuments();
+
+            // ifAdminStatus has constraint on values: up(1), down(2), testing(3)
+            Assert.That(registry.Verify("IF-MIB", "ifAdminStatus", new Integer32(1)), Is.True, "Value 1 (up) should pass");
+            Assert.That(registry.Verify("IF-MIB", "ifAdminStatus", new Integer32(2)), Is.True, "Value 2 (down) should pass");
+            Assert.That(registry.Verify("IF-MIB", "ifAdminStatus", new Integer32(3)), Is.True, "Value 3 (testing) should pass");
+            Assert.That(registry.Verify("IF-MIB", "ifAdminStatus", new Integer32(0)), Is.False, "Value 0 should not pass");
+            Assert.That(registry.Verify("IF-MIB", "ifAdminStatus", new Integer32(4)), Is.False, "Value 4 should not pass");
+            Assert.That(registry.Verify("IF-MIB", "ifAdminStatus", new Integer32(100)), Is.False, "Value 100 should not pass");
+#endif
+        }
+
+        /// <summary>
+        /// Test case for BITS constraint verification.
+        /// Covers: BITS type constraints, multiple bit values, named bits.
+        /// </summary>
+#if !TRIAL
+        [Test]
+        public void TestConstraintVerification_BitsType()
+        {
+            var registry = LoadTestingDocuments();
+
+            var item = registry.Tree.Find("TEST-MIB", "testEntity");
+            var entity = item.DisplayEntity;
+            Assert.That(entity, Is.Not.Null);
+
+            // CiscoCosList is BITS type with 8 named bits
+            var obj = entity as IObjectTypeMacro;
+            Assert.That(obj, Is.Not.Null);
+            
+            // The resolved syntax should eventually resolve to BitsType
+            var lastType = obj.ResolvedSyntax.GetLastType();
+            Assert.That(lastType, Is.TypeOf<BitsType>());
+            
+            var bitsType = lastType as BitsType;
+            Assert.That(bitsType.NamedBits, Is.Not.Null);
+            Assert.That(bitsType.NamedBits.Count, Is.EqualTo(8), "CiscoCosList should have 8 bits");
+#endif
+        }
+
         private static ObjectRegistryBase LoadTestingDocuments()
         {
             var collector = new ErrorRegistry();
