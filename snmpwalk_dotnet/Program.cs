@@ -12,7 +12,7 @@ using Lextm.SharpSnmpLib.Messaging;
 using System.Net;
 using System.Collections.Generic;
 using System.Linq;
-using Lextm.SharpSnmpPro.Mib;
+using Lextm.SharpSnmpPro.Mib; 
 
 // typical usage
 // snmpwalk -c=public -v=1 -m=subtree localhost 1.3.6.1.2.1.1
@@ -256,7 +256,7 @@ namespace snmpwalk
                 var tree = registry.Tree;
                 DecoderRegistry.Register(new InetAddressDecoder());
 
-                foreach (Variable variable in result)
+                    foreach (Variable variable in result)
                 {
                     var o = tree.Search(variable.Id.ToNumerical());
 #if TRIAL

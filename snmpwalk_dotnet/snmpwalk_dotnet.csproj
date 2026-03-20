@@ -7,9 +7,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="..\snmpwalk_cs\Program.cs" Link="Program.cs" />
-  </ItemGroup>
+  
 
   <ItemGroup>
     <None Include="..\Tests.NUnit\Resources\SNMPv2-CONF.txt" Link="Resources\SNMPv2-CONF.txt">
@@ -33,12 +31,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\snmpwalk_cs\sharpsnmppro.txt" Link="sharpsnmppro.txt" />
+    <EmbeddedResource Include="sharpsnmppro.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Mono.Options" />
-    <PackageReference Include="SharpSnmpPro.Mib.Trial"/>
+    <PackageReference Include="SharpSnmpPro.Mib.Trial" />
   </ItemGroup>
 
 </Project>

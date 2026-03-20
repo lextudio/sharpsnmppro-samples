@@ -2,7 +2,7 @@
 using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpPro.Mib.Registry;
 using System.IO;
-using Parser = Lextm.SharpSnmpPro.Mib.Registry.Parser2;
+using Parser = Lextm.SharpSnmpPro.Mib.Registry.Parser2; 
 using System.Reflection;
 using Lextm.SharpSnmpPro.Mib.Validation;
 
@@ -44,7 +44,7 @@ namespace snmptranslate
             {
                 string oid = args[0];
                 var o = tree.Search(ObjectIdentifier.Convert(oid));
-                string textual = o.AlternativeText;
+                string textual = o.Path;
                 Console.WriteLine(textual);
                 if (o.GetRemaining().Count == 0)
                 {

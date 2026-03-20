@@ -3,12 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33027.239
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "snmptranslate", "snmptranslate_cs\snmptranslate.csproj", "{6475E834-1869-4713-9A67-C808B349A1D6}"
-EndProject
+
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests.NUnit\Tests.csproj", "{591452A6-2EAA-48B8-A314-1B05BA49AF54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "snmpwalk", "snmpwalk_cs\snmpwalk.csproj", "{C201D903-8292-41DA-A18B-E817F1C5BCFB}"
-EndProject
+
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "snmptranslate_dotnet", "snmptranslate_dotnet\snmptranslate_dotnet.csproj", "{131A6354-96FD-4546-B947-DB286D307535}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "snmpwalk_dotnet", "snmpwalk_dotnet\snmpwalk_dotnet.csproj", "{A1F7BE78-0231-4A61-840A-CC80AFACBABF}"
@@ -19,18 +17,11 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6475E834-1869-4713-9A67-C808B349A1D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6475E834-1869-4713-9A67-C808B349A1D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6475E834-1869-4713-9A67-C808B349A1D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6475E834-1869-4713-9A67-C808B349A1D6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{591452A6-2EAA-48B8-A314-1B05BA49AF54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{591452A6-2EAA-48B8-A314-1B05BA49AF54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{591452A6-2EAA-48B8-A314-1B05BA49AF54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{591452A6-2EAA-48B8-A314-1B05BA49AF54}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C201D903-8292-41DA-A18B-E817F1C5BCFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C201D903-8292-41DA-A18B-E817F1C5BCFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C201D903-8292-41DA-A18B-E817F1C5BCFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C201D903-8292-41DA-A18B-E817F1C5BCFB}.Release|Any CPU.Build.0 = Release|Any CPU
+
 		{131A6354-96FD-4546-B947-DB286D307535}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{131A6354-96FD-4546-B947-DB286D307535}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{131A6354-96FD-4546-B947-DB286D307535}.Release|Any CPU.ActiveCfg = Release|Any CPU
